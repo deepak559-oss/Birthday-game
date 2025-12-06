@@ -1,465 +1,782 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Birthday Game 🎉💗</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>16-Level Birthday Quest 🎉💗</title>
 
-  <!-- Cute fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-  <style>
-    :root{
-      --bg1: #fff0f7;
-      --bg2: #ffeaf2;
-      --accent: #ff4da6;
-      --card:#ffffffc9;
-      --shadow: rgba(255,77,166,0.15);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:'Poppins', 'Baloo 2', sans-serif;
-      background: linear-gradient(135deg,var(--bg1),var(--bg2));
-      color: #44233a;
-      text-align:center;
-      min-height:100vh;
-      padding:24px;
-    }
-    header{margin-bottom:10px;}
-    h1{
-      font-family:'Baloo 2';
-      font-size:36px;
-      margin:8px 0;
-      color: var(--accent);
-    }
-    .subtitle{
-      font-size:15px;
-      margin:0 0 18px;
-      color:#6d4159;
-    }
+<style>
+:root{
+  --bg1:#fff6fb;
+  --bg2:#ffeef7;
+  --accent:#ff4da6;
+  --muted:#7a4b66;
+  --card:#fff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Poppins', 'Baloo 2', sans-serif;
+  background: linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--muted);
+  -webkit-font-smoothing:antialiased;
+  text-align:center;
+  padding:18px;
+  min-height:100vh;
+}
+header{margin:6px 0 12px}
+h1{font-family:'Baloo 2'; font-size:30px; color:var(--accent); margin:6px 0}
+.subtitle{font-size:14px;color:#8a5a74;margin-bottom:12px}
 
-    #game-area{ max-width:900px; margin:0 auto; padding:16px;}
-    .stage{ display:none; }
-    .stage.active{ display:block; }
+.container{ max-width:980px; margin:0 auto; padding:12px; }
 
-    .grid{
-      display:grid;
-      gap:12px;
-      justify-content:center;
-      margin:0 auto;
-      padding:8px;
-    }
-    .grid.grid-4{grid-template-columns: repeat(4, minmax(60px, 90px));}
+/* navigation & music */
+.topbar{
+  display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; margin-bottom:12px;
+}
+.btn{
+  background:linear-gradient(90deg,#ff7ab3,#ff4da6);
+  color:white; border:none; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600;
+  box-shadow:0 8px 18px rgba(255,77,166,0.14);
+}
+.chip{background:#fff;padding:8px 12px;border-radius:999px; box-shadow:0 8px 18px rgba(0,0,0,0.05); font-size:14px}
 
-    .card{
-      width:100%;
-      aspect-ratio:1/1;
-      background:var(--card);
-      border-radius:12px;
-      box-shadow: 0 8px 18px var(--shadow);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:36px;
-      cursor:pointer;
-      position:relative;
-      transform-style:preserve-3d;
-      transition: transform .45s;
-      user-select:none;
-    }
-    .card.flipped{ transform: rotateY(180deg); }
+/* screens */
+.screen{display:none}
+.screen.active{display:block}
 
-    .card .face{
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:12px;
-      backface-visibility:hidden;
-    }
-    .card .front{
-      background:#fff;
-      font-size:36px;
-    }
-    .card .back{
-      transform: rotateY(180deg);
-      background:#fff7fb;
-      font-size:34px;
-    }
+/* level selection grid */
+.level-grid{
+  display:grid; grid-template-columns:repeat(8,1fr); gap:8px; max-width:760px; margin:10px auto;
+}
+.level-tile{
+  background:#fff; border-radius:10px; padding:10px; box-shadow:0 8px 20px rgba(102,43,73,0.06); cursor:pointer;
+  font-family:'Baloo 2'; color:var(--accent);
+}
 
-    .info{
-      display:flex;
-      gap:12px;
-      justify-content:center;
-      margin-top:12px;
-      flex-wrap:wrap;
-    }
-    .chip{
-      background:#fff;
-      padding:8px 12px;
-      border-radius:999px;
-      box-shadow:0 6px 14px rgba(0,0,0,0.06);
-      font-size:14px;
-      color:#5d374a;
-    }
-    .btn {
-      background: linear-gradient(90deg,#ff7ab3,#ff4da6);
-      color:white;
-      border:none;
-      padding:10px 16px;
-      border-radius:12px;
-      font-weight:600;
-      cursor:pointer;
-    }
+/* generic content */
+.panel{background:linear-gradient(180deg,#fff,#fff5fb); padding:12px; border-radius:12px; box-shadow:0 12px 30px rgba(150,60,100,0.05); margin:12px auto; max-width:900px}
 
-    .grid.grid-6{grid-template-columns: repeat(6, minmax(40px, 64px));}
-    .small-emoji{
-      font-size:26px;
-      padding:8px;
-      background:#fff;
-      border-radius:10px;
-      box-shadow:0 6px 12px rgba(0,0,0,0.05);
-      cursor:pointer;
-    }
+/* small helpers */
+.row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.hint{font-size:13px;color:#8a5a74;margin-top:6px}
 
-    #arena{
-      position:relative;
-      height:420px;
-      margin:14px auto;
-      background:#fff7fb;
-      border-radius:16px;
-      overflow:hidden;
-    }
-    .floating{
-      position:absolute;
-      font-size:28px;
-      user-select:none;
-      cursor:pointer;
-    }
+/* memory grid */
+.grid{display:grid;gap:10px;justify-content:center}
+.grid.cols-4{grid-template-columns:repeat(4,minmax(56px,86px))}
+.card{background:var(--card);border-radius:12px;height:86px;display:flex;align-items:center;justify-content:center;font-size:34px;cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,0.06); user-select:none; transform-style:preserve-3d; transition:transform .45s}
+.card.flipped{transform:rotateY(180deg)}
+.face{position:relative}
+.card.hidden{visibility:hidden; opacity:0; transform:scale(.9); transition:opacity .3s, transform .3s}
 
-    #finalScreen{ display:none; padding:18px; }
-    .finalCard{
-      background:#fff;
-      padding:20px;
-      border-radius:16px;
-      box-shadow:0 10px 20px rgba(0,0,0,0.06);
-      display:inline-block;
-    }
-    .finalText{
-      font-family:'Baloo 2';
-      font-size:28px;
-      color:#c72b74;
-    }
+/* small emoji buttons */
+.small-emoji{background:#fff;padding:8px;border-radius:10px;cursor:pointer;font-size:20px;box-shadow:0 8px 14px rgba(0,0,0,0.05)}
 
-    .sparkle{
-      position:fixed;
-      pointer-events:none;
-      font-size:18px;
-      opacity:0.9;
-      z-index:9999;
-    }
-  </style>
+/* arena */
+#arena{height:360px;background:linear-gradient(180deg,#fff7fb,#fff0f6);border-radius:12px;position:relative;overflow:hidden;box-shadow:0 12px 30px rgba(150,60,100,0.04)}
+.floating{position:absolute; font-size:28px; cursor:pointer; user-select:none}
+
+/* final message & surprise */
+.surprise-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px}
+.gift {
+  width:160px;height:160px;border-radius:14px;background:linear-gradient(180deg,#ffd9f2,#ffccf0);position:relative;cursor:pointer;border:6px solid #fff;box-shadow:0 18px 40px rgba(255,77,166,0.12);
+  display:flex;align-items:center;justify-content:center;transform-origin:center;transition:transform .25s ease;
+}
+.gift .ribbon{
+  position:absolute;width:80%;height:18px;background:linear-gradient(90deg,#ff7ab3,#ff4da6);top:44%;left:10%;border-radius:6px;
+}
+.gift .vert{
+  position:absolute;height:80%;width:18px;background:linear-gradient(90deg,#ff7ab3,#ff4da6);left:50%;top:10%;transform:translateX(-50%);border-radius:6px;
+}
+.gift.open { transform: scale(1.03) rotate(-6deg) translateY(-8px); }
+.box-lid {
+  position:absolute;top:-34px;left:0;right:0;margin:auto;width:100%;height:46px;border-radius:10px;background:linear-gradient(180deg,#ffcce8,#ffb3df);box-shadow:0 10px 20px rgba(255,77,166,0.12);
+  transform-origin:50% 100%; transition: transform .6s cubic-bezier(.2,.9,.2,1);
+}
+.box-lid.open { transform: rotateX(75deg) translateY(-34px); }
+.heart-burst{ position:fixed; pointer-events:none; font-size:22px; opacity:0; transform:translateY(0); transition: all .9s cubic-bezier(.2,.8,.2,1); }
+
+/* final text hidden initially */
+.finalMsg{ font-family:'Baloo 2'; font-size:26px; color:#c72b74; display:none; text-align:center; max-width:92%; line-height:1.3}
+
+/* responsive */
+@media(max-width:720px){
+  .level-grid{grid-template-columns:repeat(4,1fr)}
+  .grid.cols-4{grid-template-columns:repeat(4,minmax(46px,64px))}
+  #arena{height:260px}
+  .gift{width:140px;height:140px}
+  .box-lid{top:-28px;height:40px}
+  .finalMsg{font-size:20px}
+}
+</style>
 </head>
-
 <body>
 <header>
-  <h1>🎉 Cute Birthday Quest 🎉</h1>
-  <div class="subtitle">3 cute + hard levels 💗</div>
+  <h1>🎉 16-Level Birthday Quest 💗</h1>
+  <div class="subtitle">Unique levels + calm birthday melody — finish all for a special surprise!</div>
 </header>
 
-<main id="game-area">
+<div class="container">
 
-  <div class="info">
-    <div class="chip" id="levelChip">Level 1</div>
-    <div class="chip" id="movesChip">Moves: 0</div>
-    <div class="chip" id="timerChip" style="display:none">Time: 00:00</div>
-    <button class="btn" id="resetBtn" onclick="restartAll()">Restart</button>
+  <div class="topbar">
+    <div class="chip" id="levelChip">Level: —</div>
+    <button class="btn" id="homeBtn">Home</button>
+    <button class="btn" id="restartBtn">Restart Current</button>
+    <button class="btn" id="musicBtn">▶ Play Music</button>
   </div>
 
-  <!-- LEVEL 1 -->
-  <section id="level1" class="stage active">
-    <h2 style="font-size:20px;color:#6d4159;margin:8px 0">Level 1 — Memory Match (8 pairs)</h2>
-    <div id="grid1" class="grid grid-4"></div>
-    <button class="btn" id="nextTo2Btn" style="display:none;margin-top:12px;">Go to Level 2</button>
-  </section>
-
-  <!-- LEVEL 2 -->
-  <section id="level2" class="stage">
-    <h2 style="font-size:20px;color:#6d4159;margin:8px 0">Level 2 — Find the exact emoji</h2>
-    <p>Find: <strong id="targetLabel">🎂</strong></p>
-    <div id="grid2" class="grid grid-6"></div>
-
-    <div class="info" style="margin-top:12px;">
-      <div class="chip" id="attemptsChip">Attempts left: 6</div>
-      <div class="chip" id="time2Chip">Time: 40</div>
+  <!-- HOME SCREEN -->
+  <div id="home" class="screen active">
+    <div class="panel">
+      <div style="font-size:18px;margin-bottom:8px">Choose a level (or progress sequentially). Each is unique!</div>
+      <div class="level-grid" id="levelGrid"></div>
+      <div class="hint">Tip: After finishing a level, use the NEXT button to go forward. Levels get harder.</div>
     </div>
+  </div>
 
-    <button class="btn" id="nextTo3Btn" style="display:none;margin-top:12px;">Go to Level 3</button>
-  </section>
-
-  <!-- LEVEL 3 -->
-  <section id="level3" class="stage">
-    <h2 style="font-size:20px;">Level 3 — Heart Chase</h2>
-    <div id="arena"></div>
-    <div class="info">
-      <div class="chip">Hearts: <span id="heartsCount">0</span>/12</div>
-      <div class="chip">Strikes: <span id="strikes">0</span>/5</div>
-      <div class="chip" id="time3Chip">Time: 40s</div>
+  <!-- LEVEL SCREEN -->
+  <div id="levelScreen" class="screen">
+    <div class="panel" id="levelPanel">
+      <h2 id="levelTitle" style="margin:6px 0;color:var(--accent)"></h2>
+      <div id="levelContent"></div>
+      <div style="margin-top:12px" class="row">
+        <button class="btn" id="nextBtn" style="display:none">Next</button>
+        <button class="btn" id="backBtn">Back to Levels</button>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <!-- FINAL SCREEN -->
-  <section id="finalScreen">
-    <div class="finalCard">
-      <div class="finalText">🎀💗 Happiest birthday babiee 💗🎀</div>
-      <div style="font-size:18px;color:#7a425f;margin-top:8px">I love you sooo much 💞✨</div>
-      <button class="btn" onclick="restartAll()" style="margin-top:14px;">Play again</button>
+  <!-- SURPRISE SCREEN (special gift box) -->
+  <div id="surpriseScreen" class="screen">
+    <div class="panel surprise-wrap">
+      <div style="font-size:18px;color:#7a425f">Tap the gift to reveal your surprise!</div>
+      <div id="giftBox" class="gift" role="button" tabindex="0" aria-label="Tap to open gift">
+        <div class="ribbon"></div>
+        <div class="vert"></div>
+        <div class="box-lid" id="boxLid"></div>
+      </div>
+      <div id="burstArea" style="position:relative;width:100%;height:120px;"></div>
+      <div class="finalMsg" id="finalMsg">
+        🎀💗 Happiest birthday babiee i love you soo much kuchiipuchiii nonii kukkiiiiii 😘😘😘😘
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn" id="finishHomeBtn">Back to Home</button>
+      </div>
     </div>
-  </section>
+  </div>
 
-<script>/* SPARKLES */
-const sparkleEmoji = ['✨','💫','🌟'];
-function spawnSparkle(){
-  const el=document.createElement('div');
-  el.className='sparkle';
-  el.textContent=sparkleEmoji[Math.random()*sparkleEmoji.length|0];
-  el.style.left=(Math.random()*90)+'%';
-  el.style.top=(Math.random()*70)+'%';
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),2000);
+  <!-- FINAL SCREEN fallback -->
+  <div id="final" class="screen">
+    <div class="panel">
+      <div class="finalCard">
+        <div class="finalText">🎀💗 Happiest birthday babiee 💗🎀</div>
+        <div style="margin-top:10px;font-size:18px;color:#7a425f">I love you sooo much 💞✨</div>
+        <div style="margin-top:12px">
+          <button class="btn" onclick="goHome()">Play again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ---------------------
+  16-Level engine + music + surprise animation
+----------------------*/
+const levelGrid = document.getElementById('levelGrid');
+const levelChip = document.getElementById('levelChip');
+const homeBtn = document.getElementById('homeBtn');
+const backBtn = document.getElementById('backBtn');
+const restartBtn = document.getElementById('restartBtn');
+const musicBtn = document.getElementById('musicBtn');
+const nextBtn = document.getElementById('nextBtn');
+const finishHomeBtn = document.getElementById('finishHomeBtn');
+
+let currentLevel = null;
+let levels = {};
+let audioCtx = null;
+let musicPlaying = false;
+let musicGain = null;
+let scheduledTimers = [];
+
+/* small helpers */
+function q(id){ return document.getElementById(id); }
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if(el) el.classList.add('active');
 }
-setInterval(spawnSparkle,800);
+function clearTimers(){ scheduledTimers.forEach(t=>clearInterval(t)); scheduledTimers=[]; }
 
-const q=id=>document.getElementById(id);
+/* build home level buttons */
+for(let i=1;i<=16;i++){
+  const div = document.createElement('div');
+  div.className='level-tile';
+  div.textContent='Level '+i;
+  div.onclick = ()=> startLevel(i);
+  levelGrid.appendChild(div);
+}
 
-/* LEVEL 1 */
-const emojisL1=['🎂','🧁','🍪','🍩','🍓','🍰','🍬','🍭'];
-let first=null, second=null, lock=false, matches=0, moves=0;
+/* -------------------------
+  MUSIC: calm synthesized melody (WebAudio)
+-------------------------*/
+function ensureAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  musicGain = audioCtx.createGain(); musicGain.gain.value = 0.0;
+  const master = audioCtx.createGain(); master.gain.value = 0.8;
+  musicGain.connect(master); master.connect(audioCtx.destination);
+}
 
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+function playMelody(){
+  ensureAudio();
+  if(musicPlaying){ stopMelody(); return; }
+  musicPlaying = true; musicBtn.textContent='⏸ Pause Music';
+  const now = audioCtx.currentTime;
+  let t = now + 0.05;
+  // gentle melody notes (happy birthday-ish)
+  const notes = [392,392,440,392,523,494, 392,392,440,392,587,523, 392,392,784,659,523,494,440, 698,698,659,523,587,523];
+  const durs = new Array(notes.length).fill(0.5).map((v,i)=> (i%6===5)?1.0:0.5);
+  for(let i=0;i<notes.length;i++){
+    const dur = durs[i];
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    const filt = audioCtx.createBiquadFilter();
+    filt.type='lowpass'; filt.frequency.value = 1800;
+    o.connect(filt); filt.connect(g); g.connect(musicGain);
+    o.type='sine';
+    o.frequency.value = notes[i];
+    o.start(t);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.08, t + 0.02);
+    g.gain.linearRampToValueAtTime(0.04, t + dur*0.6);
+    g.gain.linearRampToValueAtTime(0, t + dur);
+    o.stop(t + dur + 0.05);
+    t += dur * 0.95;
+  }
+  // open gain
+  musicGain.gain.cancelScheduledValues(audioCtx.currentTime);
+  musicGain.gain.setValueAtTime(0, audioCtx.currentTime);
+  musicGain.gain.linearRampToValueAtTime(0.9, audioCtx.currentTime+0.2);
+  // schedule end toggle
+  const total = durs.reduce((a,b)=>a+b,0) + 0.4;
+  const timer = setTimeout(()=>{ musicPlaying=false; musicBtn.textContent='▶ Play Music'; }, (total+0.6)*1000);
+  scheduledTimers.push(timer);
+}
+function stopMelody(){
+  if(!musicPlaying) return;
+  musicPlaying = false; musicBtn.textContent='▶ Play Music';
+  if(musicGain) musicGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime+0.05);
+}
+musicBtn.onclick = ()=>{
+  if(!audioCtx) ensureAudio();
+  if(!musicPlaying) playMelody(); else stopMelody();
+};
 
-function buildLevel1(){
-  const grid=q('grid1'); grid.innerHTML='';
-  matches=0; moves=0; q('movesChip').textContent='Moves: 0';
-  const arr=shuffle([...emojisL1,...emojisL1]);
+/* -------------------------
+  Level utilities & navigation
+-------------------------*/
+homeBtn.onclick = ()=> goHome();
+backBtn.onclick = ()=> goHome();
+finishHomeBtn.onclick = ()=> goHome();
+restartBtn.onclick = ()=> { if(currentLevel) startLevel(currentLevel); };
 
+function goHome(){
+  currentLevel = null; levelChip.textContent = 'Level: —'; show('home'); clearTimers();
+}
+
+/* levelComplete: shows Next button */
+function levelComplete(){
+  nextBtn.style.display = 'inline-block';
+}
+
+/* clear current level content */
+function clearLevel(){
+  clearTimers();
+  nextBtn.style.display='none';
+  document.getElementById('levelContent').innerHTML = '';
+}
+
+/* start a level */
+function startLevel(n){
+  currentLevel = n; levelChip.textContent = 'Level: '+n;
+  show('levelScreen'); clearLevel();
+  document.getElementById('levelTitle').textContent = 'Level '+n;
+  const fn = levels[n];
+  if(fn) fn();
+  else document.getElementById('levelContent').innerHTML = '<div class="hint">This level is not yet implemented.</div>';
+  nextBtn.onclick = ()=> {
+    if(n < 16) startLevel(n+1);
+    else show('surpriseScreen');
+  };
+}
+
+/* -------------------------
+  Levels 1–16 definitions
+  (Each level calls levelComplete() when done)
+-------------------------*/
+
+/* helper shuffle */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
+
+/* LEVEL 1 — Memory match 8 pairs */
+levels[1] = function(){
+  const container = document.getElementById('levelContent');
+  const grid = document.createElement('div'); grid.className='grid cols-4';
+  container.appendChild(grid);
+  const emojis = ['🎂','🧁','🍪','🍩','🍓','🍰','🍬','🍭'];
+  let arr = shuffle([...emojis,...emojis]);
+  let first=null, second=null, lock=false, matches=0, moves=0;
+  const movesEl = document.createElement('div'); movesEl.className='hint'; movesEl.textContent='Moves: 0';
+  container.appendChild(movesEl);
   arr.forEach(em=>{
-    const c=document.createElement('div');
-    c.className='card';
-    c.innerHTML=`<div class="face front">❓</div><div class="face back">${em}</div>`;
-    c.dataset.emoji=em;
-    c.onclick=()=>flipCard(c);
+    const c = document.createElement('div'); c.className='card';
+    c.innerHTML = `<div class="face front">❓</div><div class="face back">${em}</div>`;
+    c.onclick = ()=>{
+      if(lock || c.classList.contains('flipped')) return;
+      c.classList.add('flipped');
+      if(!first){ first=c; return; }
+      second = c; moves++; movesEl.textContent='Moves: '+moves;
+      if(first.innerText === second.innerText){
+        setTimeout(()=> {
+          first.classList.add('hidden'); second.classList.add('hidden');
+          first=null; second=null; matches++;
+          if(matches===8) levelComplete();
+        }, 450);
+      } else {
+        lock=true;
+        setTimeout(()=>{ first.classList.remove('flipped'); second.classList.remove('flipped'); first=null; second=null; lock=false; }, 700);
+      }
+    };
     grid.appendChild(c);
   });
-}
+};
 
-function flipCard(c){
-  if(lock||c.classList.contains('flipped'))return;
-  c.classList.add('flipped');
-  if(!first){first=c; return;}
-  second=c; moves++; q('movesChip').textContent='Moves: '+moves;
-  checkMatch();
-}
-
-function checkMatch(){
-  if(first.dataset.emoji===second.dataset.emoji){
-    matches++;
-    setTimeout(()=>{
-      first.style.visibility='hidden';
-      second.style.visibility='hidden';
-      first=null; second=null;
-      if(matches===8) level1Done();
-    },400);
-  } else {
-    lock=true;
-    setTimeout(()=>{
-      first.classList.remove('flipped');
-      second.classList.remove('flipped');
-      first=null; second=null; lock=false;
-    },700);
-  }
-}
-
-function level1Done(){
-  q('nextTo2Btn').style.display='inline-block';
-  q('levelChip').textContent='Level 1 — done!';
-}
-
-/* LEVEL 2 */
-let target='🎂', attempts=6, t2=40, t2int=null;
-
-function startLevel2Actual(){
-  q('level1').classList.remove('active');
-  q('level2').classList.add('active');
-  q('levelChip').textContent='Level 2';
-
-  attempts=6; t2=40;
-  q('attemptsChip').textContent='Attempts left: 6';
-  q('time2Chip').textContent='Time: 40';
-
-  const targets=['🎂','🧁','🍰'];
-  target=targets[Math.random()*targets.length|0];
-  q('targetLabel').textContent=target;
-
-  const grid=q('grid2'); grid.innerHTML='';
-
-  const total=36;
-  const pos= Math.random()*total|0;
-
+/* LEVEL 2 — Find exact emoji (crowded) */
+levels[2] = function(){
+  const container = document.getElementById('levelContent'); container.innerHTML='';
+  const targetDiv = document.createElement('div'); targetDiv.style.fontSize='20px'; targetDiv.style.marginBottom='8px';
+  container.appendChild(targetDiv);
+  const grid = document.createElement('div'); grid.className='grid cols-4'; container.appendChild(grid);
+  const attempts = document.createElement('div'); attempts.className='hint'; container.appendChild(attempts);
+  let tries = 6;
+  const choices = ['🎂','🧁','🍰'];
+  const target = choices[Math.floor(Math.random()*choices.length)];
+  targetDiv.innerHTML = 'Find this exact emoji: <strong style="font-size:22px">'+target+'</strong>';
+  attempts.textContent = 'Attempts left: '+tries;
+  const total = 36; const pos = Math.floor(Math.random()*total);
+  const pool = ['🧁','🍰','🍪','🍩','🍫','🍬','🍭','🍨','🍧','🍦','🍯','🍒','🍓','🍮','🥧'];
   for(let i=0;i<total;i++){
-    const d=document.createElement('div');
-    d.className='small-emoji';
-    if(i===pos){
-      d.textContent=target;
-      d.dataset.ok=1;
-    } else {
-      const pool=['🧁','🍰','🍪','🍩','🍫','🍬','🍭','🍨','🍧','🍦','🍯','🍒','🍓','🍮'];
-      d.textContent=pool[Math.random()*pool.length|0];
-    }
-    d.onclick=()=>pickL2(d);
+    const d = document.createElement('div'); d.className='small-emoji';
+    if(i===pos){ d.textContent = target; d.dataset.ok = '1'; }
+    else d.textContent = pool[Math.floor(Math.random()*pool.length)];
+    d.onclick = ()=>{
+      if(d.dataset.ok){
+        d.style.background='#fff0f7';
+        setTimeout(()=> levelComplete(), 450);
+      } else {
+        tries--; attempts.textContent='Attempts left: '+tries;
+        d.style.opacity=0.4; d.style.pointerEvents='none';
+        if(tries<=0){ alert('Out of attempts — try again!'); startLevel(2); }
+      }
+    };
     grid.appendChild(d);
   }
+};
 
-  if(t2int)clearInterval(t2int);
-  t2int=setInterval(()=>{
-    t2--; q('time2Chip').textContent='Time: '+t2;
-    if(t2<=0){
-      clearInterval(t2int);
-      alert("Time's up! Try again 💗");
-      startLevel2Actual();
+/* LEVEL 3 — Heart chase */
+levels[3] = function(){
+  const container = document.getElementById('levelContent'); container.innerHTML='';
+  const arena = document.createElement('div'); arena.id='arena'; container.appendChild(arena);
+  const info = document.createElement('div'); info.className='hint'; container.appendChild(info);
+  let hearts=0, strikes=0, timer=40;
+  info.innerHTML = `Hearts: <span id="hc3">0</span>/10 &nbsp; Strikes: <span id="sc3">0</span>/3 &nbsp; Time: <span id="tc3">40s</span>`;
+  const hc = container.querySelector('#hc3');
+  let spawn = setInterval(()=> spawnObj(arena),700);
+  let mover = setInterval(()=> moveAll(arena),50);
+  let tcount = setInterval(()=>{ timer--; if(timer<=0){ clearInterval(spawn); clearInterval(mover); clearInterval(tcount); alert('Time up! Try again'); startLevel(3);} info.querySelector('#tc3').textContent = timer+'s'; },1000);
+  scheduledTimers.push(spawn, mover, tcount);
+
+  function spawnObj(area){
+    const isHeart = Math.random()<0.6;
+    const el = document.createElement('div'); el.className='floating';
+    el.style.left = (10 + Math.random()*70) + '%';
+    el.style.top = (10 + Math.random()*70) + '%';
+    el.dataset.vx = (Math.random()>0.5?1:-1)*(0.6 + Math.random()*1.6);
+    el.dataset.vy = (Math.random()>0.5?1:-1)*(0.6 + Math.random()*1.6);
+    if(isHeart){ el.textContent='💗'; el.dataset.type='good'; el.style.fontSize=(20+Math.random()*18)+'px'; }
+    else { const wrong=['🍕','💣','👾','👀','🔥']; el.textContent = wrong[Math.floor(Math.random()*wrong.length)]; el.dataset.type='bad'; el.style.fontSize=(20+Math.random()*12)+'px'; }
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      if(el.dataset.type==='good'){ hearts++; info.querySelector('#hc3').textContent=hearts; el.remove(); if(hearts>=10){ clearInterval(spawn); clearInterval(mover); clearInterval(tcount); levelComplete(); } }
+      else { strikes++; info.querySelector('#sc3').textContent=strikes; el.remove(); if(strikes>=3){ clearInterval(spawn); clearInterval(mover); clearInterval(tcount); alert('Too many strikes! Retry.'); startLevel(3); } }
+    };
+    arena.appendChild(el);
+    setTimeout(()=>{ if(el.parentNode) el.remove(); },9000);
+  }
+
+  function moveAll(area){
+    [...area.children].forEach(o=>{
+      let l=parseFloat(o.style.left), t=parseFloat(o.style.top);
+      let vx=parseFloat(o.dataset.vx), vy=parseFloat(o.dataset.vy);
+      l += vx * 0.25; t += vy * 0.25;
+      if(l<2){ l=2; o.dataset.vx = Math.abs(vx); }
+      if(l>94){ l=94; o.dataset.vx = -Math.abs(vx); }
+      if(t<2){ t=2; o.dataset.vy = Math.abs(vy); }
+      if(t>94){ t=94; o.dataset.vy = -Math.abs(vy); }
+      o.style.left = l + '%'; o.style.top = t + '%';
+    });
+  }
+};
+
+/* LEVEL 4 — Safe click (avoid wrong emojis) */
+levels[4] = function(){
+  const c = document.getElementById('levelContent'); c.innerHTML='';
+  const grid = document.createElement('div'); grid.className='grid cols-4'; c.appendChild(grid);
+  const info = document.createElement('div'); info.className='hint'; c.appendChild(info);
+  let score=0;
+  info.textContent = 'Click 12 safe emojis without clicking a wrong one.';
+  const pool = ['✨','🌸','💖','🍓','💗','🌟','🌈','🎀','🍬','🍪'];
+  const bad = ['💀','🔥','💣','👾'];
+  const total=20;
+  for(let i=0;i<total;i++){
+    const d = document.createElement('div'); d.className='small-emoji';
+    if(Math.random() < 0.66) d.textContent = pool[Math.floor(Math.random()*pool.length)];
+    else d.textContent = bad[Math.floor(Math.random()*bad.length)];
+    d.onclick = ()=>{
+      if(['✨','🌸','💖','💗','🌟','🌈','🎀','🍬','🍪','🍓'].includes(d.textContent)){
+        score++; d.style.opacity=0.4; d.style.pointerEvents='none';
+        if(score >= 12) levelComplete();
+      } else {
+        alert('Oops! Wrong emoji — level restarts'); startLevel(4);
+      }
+    };
+    grid.appendChild(d);
+  }
+};
+
+/* LEVEL 5 — Simon Says emojis */
+levels[5] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const panel = document.createElement('div'); panel.style.margin='8px';
+  c.appendChild(panel);
+  const buttons = ['💗','✨','🌸','🎀'].map(e=>{ const b=document.createElement('div'); b.className='small-emoji'; b.textContent=e; b.style.display='inline-block'; b.style.margin='8px'; return b; });
+  buttons.forEach(b=>panel.appendChild(b));
+  const hint = document.createElement('div'); hint.className='hint'; hint.textContent='Watch the sequence and repeat it. Reach length 6 to win.'; c.appendChild(hint);
+  let seq=[]; let userIdx=0; let playing=false;
+  function playSeq(){
+    playing=true; userIdx=0;
+    let i=0; const it = setInterval(()=>{ if(i>=seq.length){ clearInterval(it); playing=false; return; } const ch=seq[i]; flashButton(ch); i++; }, 650);
+  }
+  function flashButton(emoji){
+    const b = [...panel.children].find(n=>n.textContent===emoji);
+    if(!b) return; b.style.transform='scale(1.35)'; setTimeout(()=> b.style.transform='',300);
+  }
+  seq.push(buttons[Math.floor(Math.random()*buttons.length)].textContent);
+  playSeq();
+  panel.addEventListener('click', (e)=>{
+    if(playing) return; if(!e.target || !e.target.textContent) return;
+    const val = e.target.textContent;
+    if(val !== seq[userIdx]){ alert('Wrong! Restarting.'); seq=[buttons[Math.floor(Math.random()*buttons.length)].textContent]; playSeq(); return; }
+    userIdx++;
+    if(userIdx===seq.length){
+      if(seq.length >= 6){ levelComplete(); return; }
+      seq.push(buttons[Math.floor(Math.random()*buttons.length)].textContent);
+      playSeq();
     }
-  },1000);
-}
-
-function pickL2(el){
-  if(el.dataset.ok){
-    clearInterval(t2int);
-    q('nextTo3Btn').style.display='inline-block';
-    q('attemptsChip').textContent='Found it! 🎉';
-    return;
-  }
-  attempts--;
-  q('attemptsChip').textContent='Attempts left: '+attempts;
-  el.style.opacity='0.4';
-  el.style.pointerEvents='none';
-  if(attempts<=0){
-    clearInterval(t2int);
-    alert("Out of attempts! Try again 💫");
-    startLevel2Actual();
-  }
-}
-
-/* LEVEL 3 */
-const arena=q('arena');
-let h=0, s=0, t3=40, intA=null, intM=null, intT=null;
-
-function startLevel3Actual(){
-  q('level2').classList.remove('active');
-  q('level3').classList.add('active');
-  q('levelChip').textContent='Level 3';
-  arena.innerHTML=''; h=0; s=0; t3=40;
-  q('heartsCount').textContent=h;
-  q('strikes').textContent=s;
-  q('time3Chip').textContent='Time: 40s';
-
-  intA=setInterval(spawnObj,700);
-  intM=setInterval(moveObjs,50);
-  intT=setInterval(()=>{
-    t3--; q('time3Chip').textContent='Time: '+t3+'s';
-    if(t3<=0) end3(false);
-  },1000);
-}
-
-function rnd(a,b){return a+Math.random()*(b-a);}
-
-function spawnObj(){
-  const ok=Math.random()<0.55;
-  const d=document.createElement('div');
-  d.className='floating';
-  d.style.left=rnd(5,85)+'%';
-  d.style.top=rnd(5,85)+'%';
-  d.dataset.vx=(Math.random()>0.5?1:-1)*(0.6+Math.random()*1.6);
-  d.dataset.vy=(Math.random()>0.5?1:-1)*(0.6+Math.random()*1.6);
-
-  if(ok){
-    d.textContent='💗';
-    d.dataset.type='heart';
-  } else {
-    const wrong=['💀','👾','🍕','🍪','🔥','🐱','🍓','👀'];
-    d.textContent=wrong[Math.random()*wrong.length|0];
-    d.dataset.type='bad';
-  }
-
-  d.onclick=e=>{
-    e.stopPropagation();
-    if(d.dataset.type==='heart'){
-      h++; q('heartsCount').textContent=h;
-      d.remove();
-      if(h>=12) end3(true);
-    } else {
-      s++; q('strikes').textContent=s;
-      t3=Math.max(0,t3-4);
-      q('time3Chip').textContent='Time: '+t3+'s';
-      d.remove();
-      if(s>=5) end3(false);
-    }
-  };
-  arena.appendChild(d);
-  setTimeout(()=>d.remove(),9000);
-}
-
-function moveObjs(){
-  [...arena.children].forEach(o=>{
-    let l=parseFloat(o.style.left), t=parseFloat(o.style.top);
-    let vx=parseFloat(o.dataset.vx), vy=parseFloat(o.dataset.vy);
-    l+=vx; t+=vy;
-    if(l<2){ l=2; o.dataset.vx=Math.abs(vx);}
-    if(l>94){l=94; o.dataset.vx=-Math.abs(vx);}
-    if(t<2){ t=2; o.dataset.vy=Math.abs(vy);}
-    if(t>94){t=94; o.dataset.vy=-Math.abs(vy);}
-    o.style.left=l+'%';
-    o.style.top=t+'%';
   });
-}
+};
 
-function end3(ok){
-  clearInterval(intA); clearInterval(intM); clearInterval(intT);
-  if(ok){
-    q('level3').classList.remove('active');
-    q('finalScreen').style.display='block';
-  } else {
-    alert("Try again 💗");
-    startLevel3Actual();
+/* LEVEL 6 — Simple maze (click path) */
+levels[6] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const grid = document.createElement('div'); grid.className='grid cols-4'; c.appendChild(grid);
+  const path = new Set(['0-1','1-1','2-1','2-2','3-2']);
+  for(let r=0;r<4;r++){
+    for(let col=0;col<4;col++){
+      const key = `${r}-${col}`;
+      const tile = document.createElement('div'); tile.className='card'; tile.style.height='64px'; tile.style.fontSize='18px';
+      tile.textContent = (r===0 && col===1)?'Start': (r===3 && col===2)?'Exit': '';
+      tile.onclick = ()=>{
+        if(tile.classList.contains('activated')) return;
+        if(path.has(key)){
+          tile.style.background='#fff0f7'; tile.classList.add('activated');
+          const activated = document.querySelectorAll('.card.activated').length;
+          if(activated >= path.size) levelComplete();
+        } else {
+          alert('Wrong turn! Start again.'); startLevel(6);
+        }
+      };
+      grid.appendChild(tile);
+    }
   }
-}
+  const hint = document.createElement('div'); hint.className='hint'; hint.textContent='Click tiles along the hidden path from Start → Exit.'; c.appendChild(hint);
+};
 
-/* RESTART */
-function restartAll(){
-  clearInterval(intA);clearInterval(intM);clearInterval(intT);
-  clearInterval(t2int);
+/* LEVEL 7 — Tap matching emoji quickly */
+levels[7] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const targets = ['🍓','🍪','🧁','🍰']; const target = targets[Math.floor(Math.random()*targets.length)];
+  const top = document.createElement('div'); top.className='hint'; top.textContent = 'Tap all the '+target+' items within 12 seconds';
+  c.appendChild(top);
+  const grid = document.createElement('div'); grid.className='grid cols-4'; c.appendChild(grid);
+  let count = 0, toFind = 8, timeLeft = 12;
+  for(let i=0;i<16;i++){
+    const d = document.createElement('div'); d.className='small-emoji';
+    d.textContent = (Math.random()<0.45)? target : ['🍩','🍪','🍓','🍭','🍬','🍫'][Math.floor(Math.random()*6)];
+    d.onclick = ()=>{
+      if(d.textContent===target){ d.style.opacity=0.4; d.style.pointerEvents='none'; count++; if(count>=toFind) levelComplete(); }
+    };
+    grid.appendChild(d);
+  }
+  const timer = setInterval(()=>{ timeLeft--; top.textContent = 'Tap all the '+target+' — Time: '+timeLeft+'s'; if(timeLeft<=0){ clearInterval(timer); alert('Time up!'); startLevel(7); } },1000);
+  scheduledTimers.push(timer);
+};
 
-  q('finalScreen').style.display='none';
-  q('nextTo2Btn').style.display='none';
-  q('nextTo3Btn').style.display='none';
+/* LEVEL 8 — Swap pieces to make center cake */
+levels[8] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const pieces = ['🍰','🎂','🧁','🍓','🍬','🍪','🍩','🍭','✨'];
+  pieces.sort(()=>Math.random()-0.5);
+  const grid = document.createElement('div'); grid.className='grid cols-4'; c.appendChild(grid);
+  let selected = null;
+  pieces.forEach((p)=>{
+    const d = document.createElement('div'); d.className='card'; d.style.height='76px'; d.style.fontSize='28px'; d.textContent=p;
+    d.onclick = ()=>{
+      if(!selected){ selected = d; d.style.boxShadow='0 6px 18px rgba(255,77,166,0.25)'; return; }
+      const tmp = selected.textContent; selected.textContent = d.textContent; d.textContent = tmp;
+      selected.style.boxShadow=''; selected=null;
+      const cells = Array.from(grid.children);
+      if(cells[4].textContent === '🎂') levelComplete();
+    };
+    grid.appendChild(d);
+  });
+  const hint = document.createElement('div'); hint.className='hint'; hint.textContent='Swap two tiles to make the center show 🎂'; c.appendChild(hint);
+};
 
-  q('level3').classList.remove('active');
-  q('level2').classList.remove('active');
-  q('level1').classList.add('active');
+/* LEVEL 9 — Connect 1→5 in order */
+levels[9] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const seq = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣'];
+  const pool = shuffle([...seq, '🍓','🍪','🍩','🧁','🍬','🍭']).slice(0,12);
+  const grid = document.createElement('div'); grid.className='grid cols-4'; c.appendChild(grid);
+  pool.forEach(p=>{
+    const d = document.createElement('div'); d.className='small-emoji'; d.textContent=p;
+    d.onclick = ()=>{
+      if(p === seq[0]){
+        seq.shift(); d.style.opacity=0.4; d.style.pointerEvents='none';
+        if(seq.length === 0) levelComplete();
+      } else {
+        alert('Wrong one! Restarting level'); startLevel(9);
+      }
+    };
+    grid.appendChild(d);
+  });
+};
 
-  q('levelChip').textContent='Level 1';
+/* LEVEL 10 — Spot the difference (two grids) */
+levels[10] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const left = document.createElement('div'); left.className='grid cols-4'; const right = document.createElement('div'); right.className='grid cols-4';
+  const base = ['🍓','🍪','🍰','🧁','🍩','🍬','🍭','✨','🍒','🍫','🍯','🍦'];
+  const rightArr = base.slice();
+  for(let i=0;i<3;i++){ const idx = Math.floor(Math.random()*rightArr.length); rightArr[idx] = ['💖','🌸','💗','🎀'][Math.floor(Math.random()*4)]; }
+  let diffs = 3;
+  base.forEach((b,idx)=>{
+    const a = document.createElement('div'); a.className='small-emoji'; a.textContent=b; left.appendChild(a);
+    const r = document.createElement('div'); r.className='small-emoji'; r.textContent=rightArr[idx];
+    r.onclick = ()=>{
+      if(r.textContent !== base[idx]){ r.style.opacity=0.4; r.style.pointerEvents='none'; diffs--; if(diffs<=0) levelComplete(); }
+      else { alert('Not different.'); }
+    };
+    right.appendChild(r);
+  });
+  const holder = document.createElement('div'); holder.style.display='flex'; holder.style.gap='12px'; holder.style.justifyContent='center';
+  holder.appendChild(left); holder.appendChild(right); c.appendChild(holder);
+};
 
-  buildLevel1();
-}
+/* LEVEL 11 — Emoji shadow match */
+levels[11] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const targetImg = ['🎂','🧁','🍪'][Math.floor(Math.random()*3)];
+  c.innerHTML = `<div class="hint">Tap the emoji matching this silhouette: <span style="font-size:28px">${targetImg}</span></div>`;
+  const grid = document.createElement('div'); grid.className='grid cols-4'; c.appendChild(grid);
+  const pool = ['🎂','🧁','🍪','🍩','🍓','🍰','🍬','🍭'];
+  pool.sort(()=>Math.random()-0.5);
+  pool.forEach(p=>{
+    const d = document.createElement('div'); d.className='small-emoji'; d.textContent=p;
+    d.onclick = ()=>{ if(p === targetImg) levelComplete(); else { alert('Not a match — try again'); } };
+    grid.appendChild(d);
+  });
+};
 
-/* BUTTON HOOKS */
-q('nextTo2Btn').onclick = startLevel2Actual;
-q('nextTo3Btn').onclick = startLevel3Actual;
+/* LEVEL 12 — Balloon pop (don't pop special) */
+levels[12] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const grid = document.createElement('div'); grid.className='grid cols-4'; c.appendChild(grid);
+  const special = '🎈';
+  let specialPos = Math.floor(Math.random()*12);
+  let popped = 0;
+  for(let i=0;i<12;i++){
+    const b = document.createElement('div'); b.className='small-emoji';
+    b.textContent = (i===specialPos)? special : ['🎈','🎈','🎈','💣','🍕','🍪'][Math.floor(Math.random()*6)];
+    b.onclick = ()=>{
+      if(b.textContent === special){ alert('This one is special — do not pop it! Starting again.'); startLevel(12); }
+      else { b.style.opacity=0.4; b.style.pointerEvents='none'; popped++; if(popped>=11) levelComplete(); }
+    };
+    grid.appendChild(b);
+  }
+};
 
-/* INIT */
-buildLevel1();
+/* LEVEL 13 — Whack-a-mole hearts */
+levels[13] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const grid = document.createElement('div'); grid.className='grid cols-4'; c.appendChild(grid);
+  for(let i=0;i<12;i++){ const d=document.createElement('div'); d.className='card'; d.style.height='68px'; d.textContent=''; grid.appendChild(d); }
+  let hits = 0, timeLeft=18;
+  const cells = Array.from(grid.children);
+  const spawn = setInterval(()=>{ cells.forEach(s=>{ s.textContent=''; s.onclick=null }); const idx = Math.floor(Math.random()*cells.length); cells[idx].textContent='💗'; cells[idx].onclick = ()=>{ hits++; cells[idx].textContent=''; if(hits>=10){ clearInterval(spawn); clearInterval(timer); levelComplete(); } }}, 650);
+  const timer = setInterval(()=>{ timeLeft--; if(timeLeft<=0){ clearInterval(spawn); clearInterval(timer); alert('Time up'); startLevel(13); } },1000);
+  scheduledTimers.push(spawn, timer);
+};
+
+/* LEVEL 14 — Emoji riddle */
+levels[14] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const riddles = [
+    {q:'I am round, sweet, sometimes glazed. Find me!','a':'🍩'},
+    {q:'Small, red, juicy, I top cakes. Which emoji?','a':'🍓'},
+    {q:'Wrapped, colorful, a small treat. Which?','a':'🍬'}
+  ];
+  const r = riddles[Math.floor(Math.random()*riddles.length)];
+  c.innerHTML = `<div class="hint">${r.q}</div>`;
+  const grid = document.createElement('div'); grid.className='grid cols-4'; c.appendChild(grid);
+  const opts = shuffle([r.a,'🍪','🧁','🍰','🍭','🍫','💗']).slice(0,6);
+  opts.forEach(o=>{ const d=document.createElement('div'); d.className='small-emoji'; d.textContent=o; d.onclick=()=>{ if(o===r.a) levelComplete(); else alert('Try again'); }; grid.appendChild(d); });
+};
+
+/* LEVEL 15 — Sound to emoji (play tone, pick emoji) */
+levels[15] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const hint = document.createElement('div'); hint.className='hint'; hint.textContent='Listen to the tone and pick the emoji that matches the pitch (high/mid/low).';
+  c.appendChild(hint);
+  const btnPlay = document.createElement('button'); btnPlay.className='btn'; btnPlay.textContent='Play Tone';
+  c.appendChild(btnPlay);
+  const grid = document.createElement('div'); grid.className='grid cols-4'; c.appendChild(grid);
+  const map = {'low':'🍪','mid':'🧁','high':'✨'};
+  ['🍪','🧁','✨','🍓','🍰','🍬'].forEach(e=>{ const d=document.createElement('div'); d.className='small-emoji'; d.textContent=e; d.onclick=()=>{ if(e===correctEmoji) levelComplete(); else alert('Nope') }; grid.appendChild(d); });
+
+  let correctEmoji = null;
+  btnPlay.onclick = ()=>{
+    ensureAudio();
+    const choice = ['low','mid','high'][Math.floor(Math.random()*3)];
+    correctEmoji = map[choice];
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type='sine';
+    o.frequency.value = (choice==='low'?220: choice==='mid'?440:880);
+    g.gain.value = 0;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); g.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime+0.02); g.gain.linearRampToValueAtTime(0, audioCtx.currentTime+1.0);
+    o.stop(audioCtx.currentTime+1.05);
+  };
+};
+
+/* LEVEL 16 — Final: show a prompt to go to surprise screen */
+levels[16] = function(){
+  const c=document.getElementById('levelContent'); c.innerHTML='';
+  const txt = document.createElement('div'); txt.className='hint'; txt.textContent='Great job! Tap NEXT to reveal your special surprise.';
+  c.appendChild(txt);
+  // no automatic complete; Next will go to surprise screen
+  levelComplete();
+};
+
+/* -------------------------
+  Surprise gift box animation & final message
+  (gift shakes -> lid opens -> hearts burst -> message appears)
+-------------------------*/
+(function setupSurprise(){
+  const gift = q('giftBox');
+  const lid = q('boxLid');
+  const burstArea = q('burstArea');
+  const finalMsg = q('finalMsg');
+
+  let opened = false;
+
+  // small shake to invite click
+  function gentleShake(){
+    if(opened) return;
+    gift.style.transform = 'translateY(-4px) rotate(-2deg)';
+    setTimeout(()=> gift.style.transform = '', 600);
+  }
+  const shakeTimer = setInterval(gentleShake, 2200);
+
+  function spawnHeart(x, y, delay){
+    const h = document.createElement('div');
+    h.className = 'heart-burst';
+    h.textContent = ['💖','💗','😘','🌸'][Math.floor(Math.random()*4)];
+    h.style.left = (x + (Math.random()*60-30)) + '%';
+    h.style.top = (y + (Math.random()*40-20)) + '%';
+    h.style.opacity = '0';
+    document.body.appendChild(h);
+    setTimeout(()=>{ h.style.opacity = '1'; h.style.transform = 'translateY(-40px) scale(1.1)'; }, delay || 40);
+    setTimeout(()=>{ h.style.opacity = '0'; h.style.transform = 'translateY(-80px) scale(0.8)'; }, 1400 + (delay||0));
+    setTimeout(()=> h.remove(), 2000 + (delay||0));
+  }
+
+  function burstHearts(){
+    for(let i=0;i<24;i++){
+      const left = 20 + Math.random()*60;
+      const top = 30 + Math.random()*50;
+      spawnHeart(left, top, i*60);
+    }
+  }
+
+  function openGift(){
+    if(opened) return;
+    opened = true;
+    clearInterval(shakeTimer);
+    gift.classList.add('open');
+    lid.classList.add('open');
+    // slight sound click
+    try{
+      ensureAudio();
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type='triangle'; o.frequency.value = 660; g.gain.value = 0.0;
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(); g.gain.linearRampToValueAtTime(0.09, audioCtx.currentTime+0.02); g.gain.linearRampToValueAtTime(0, audioCtx.currentTime+0.4); o.stop(audioCtx.currentTime+0.45);
+    }catch(e){}
+    // hearts
+    setTimeout(()=> burstHearts(), 180);
+    // show final message
+    setTimeout(()=> {
+      finalMsg.style.display = 'block';
+      finalMsg.style.opacity = '0';
+      finalMsg.style.transform = 'scale(0.96)';
+      setTimeout(()=> {
+        finalMsg.style.transition = 'opacity .6s, transform .6s';
+        finalMsg.style.opacity = '1';
+        finalMsg.style.transform = 'scale(1)';
+      }, 40);
+    }, 600);
+  }
+
+  gift.addEventListener('click', openGift);
+  gift.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') openGift(); });
+
+})();
+
+/* -------------------------
+  Init: go home and prepare audio on first user gesture
+-------------------------*/
+goHome();
+window.addEventListener('click', function initAudioOnce(){
+  try{ ensureAudio(); }catch(e){}
+  window.removeEventListener('click', initAudioOnce);
+}, {once:true});
+
 </script>
-</main>
 </body>
 </html>
