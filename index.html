@@ -2,252 +2,296 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Birthday Game 🎂💗</title>
+<title>Birthday Game 🎂💖</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {
-    margin: 0;
-    font-family: "Comic Sans MS", cursive;
-    background: linear-gradient(135deg, #ffe1f0, #ffd7fa);
-    text-align: center;
-    color: #d12c78;
+body{
+    margin:0;
+    text-align:center;
+    font-family:"Comic Sans MS",cursive;
+    background:linear-gradient(135deg,#ffe1f0,#ffd7fa);
+    color:#d12c78;
+    overflow-x:hidden;
 }
-h1 { margin-top: 20px; font-size: 32px; }
-
-.screen { display: none; padding: 20px; }
-.active { display: block; }
-
-/* Buttons */
-.btn {
-    background: #ff4fa3;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 14px;
-    cursor: pointer;
-    font-size: 18px;
-    margin-top: 15px;
+h1{margin-top:15px;font-size:32px;}
+.screen{display:none;padding:20px;}
+.active{display:block;}
+.btn{
+    background:#ff4fa3;color:white;border:none;
+    padding:12px 20px;border-radius:12px;cursor:pointer;
+    font-size:18px;margin-top:10px;
 }
-.level-btn {
-    background: white;
-    padding: 15px;
-    border-radius: 14px;
-    font-size: 20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    cursor: pointer;
-    margin: 10px;
-    display: inline-block;
+.level-btn{
+    background:white;padding:15px;border-radius:14px;
+    font-size:20px;display:inline-block;margin:10px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.15);cursor:pointer;
+    opacity:0.5;
 }
-
-/* Memory cards */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(4, 70px);
-    gap: 10px;
-    justify-content: center;
+.level-btn.unlocked{opacity:1;}
+.grid{
+    display:grid;grid-template-columns:repeat(4,70px);
+    gap:10px;justify-content:center;
 }
-.card {
-    width: 70px; height: 70px;
-    background: white;
-    border-radius: 10px;
-    font-size: 35px;
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer;
+.card{
+    width:70px;height:70px;background:white;
+    border-radius:10px;cursor:pointer;
+    font-size:36px;display:flex;
+    justify-content:center;align-items:center;
 }
-
-/* Surprise Screen */
-#giftBox {
-    font-size: 120px;
-    animation: shake 1s infinite;
-    cursor: pointer;
+.fallHeart{
+    position:fixed;top:-40px;font-size:40px;
+    animation:fall 2.7s linear forwards;
 }
-@keyframes shake {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(3deg); }
-  50% { transform: rotate(-3deg); }
-  100%{ transform: rotate(0deg); }
+@keyframes fall{
+    to{top:110vh;}
 }
-.message {
-    font-size: 26px;
-    margin-top: 20px;
-    color: #ff2e8e;
+#gift{
+    font-size:120px;cursor:pointer;
+    animation:shake 1s infinite;
+}
+@keyframes shake{
+    0%{transform:rotate(0deg);}
+    25%{transform:rotate(4deg);}
+    50%{transform:rotate(-4deg);}
+    100%{transform:rotate(0deg);}
+}
+.message{
+    font-size:26px;color:#ff2e8e;margin-top:20px;
+}
+/* Cute confetti */
+.confetti{
+    position:fixed;width:15px;height:15px;background:random;
+    top:0;left:0;z-index:9999;pointer-events:none;
+    border-radius:50%;animation:confettiFall 3s linear forwards;
+}
+@keyframes confettiFall{
+    0%{transform:translateY(0) rotate(0deg);}
+    100%{transform:translateY(110vh) rotate(360deg);}
 }
 </style>
 </head>
 <body>
 
-<!-- AUDIO -->
+<!-- Music -->
 <audio id="music" loop>
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4af7e5cc1b.mp3?filename=happy-birthday-to-you-piano-10992.mp3" type="audio/mpeg">
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4af7e5cc1b.mp3?filename=happy-birthday-to-you-piano-10992.mp3" type="audio/mpeg">
 </audio>
 
-<!-- HOME -->
+<!-- Home Screen -->
 <div id="home" class="screen active">
-    <h1>🎉 Birthday Game 💗</h1>
+    <h1>🎉 Hard Mode Birthday Game 💖</h1>
     <button class="btn" onclick="startMusic()">▶ Play Birthday Song</button>
-
-    <h2>Select a Level 🎮</h2>
+    <h2>Select Level 🎮</h2>
     <div>
-        <div class="level-btn" onclick="startLevel(1)">Level 1</div>
-        <div class="level-btn" onclick="startLevel(2)">Level 2</div>
-        <div class="level-btn" onclick="startLevel(3)">Level 3</div>
-        <div class="level-btn" onclick="startLevel(4)">Level 4</div>
-        <div class="level-btn" onclick="startLevel(5)">Level 5</div>
+        <div class="level-btn unlocked" id="lv1" onclick="startLevel(1)">Level 1</div>
+        <div class="level-btn" id="lv2" onclick="unlockCheck(2)">Level 2</div>
+        <div class="level-btn" id="lv3" onclick="unlockCheck(3)">Level 3</div>
+        <div class="level-btn" id="lv4" onclick="unlockCheck(4)">Level 4</div>
+        <div class="level-btn" id="lv5" onclick="unlockCheck(5)">Level 5</div>
     </div>
 </div>
 
-<!-- LEVEL SCREEN -->
+<!-- Level Screen -->
 <div id="levelScreen" class="screen">
-    <h1 id="levelTitle"></h1>
-    <div id="levelContent"></div>
-    <button class="btn" onclick="goHome()">Back</button>
+    <h1 id="title"></h1>
+    <div id="content"></div>
+    <button class="btn" onclick="home()">Back</button>
 </div>
 
-<!-- SURPRISE SCREEN -->
+<!-- Surprise Screen -->
 <div id="surprise" class="screen">
     <h1>🎁 Tap the Gift!</h1>
-    <div id="giftBox" onclick="openGift()">🎁</div>
-    <div id="finalMessage" class="message"></div>
+    <div id="gift" onclick="openGift()">🎁</div>
+    <div id="finalMsg" class="message"></div>
 </div>
 
 <script>
+let unlockedLevels = [1]; // Level 1 is unlocked by default
+
 function show(id){
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
 }
 
 function startMusic(){
     document.getElementById("music").play();
 }
 
-function goHome(){
-    show("home");
+function home(){ show("home"); updateLevelButtons(); }
+
+function updateLevelButtons(){
+    for(let i=1;i<=5;i++){
+        let btn=document.getElementById("lv"+i);
+        if(unlockedLevels.includes(i)){
+            btn.classList.add("unlocked");
+        } else{
+            btn.classList.remove("unlocked");
+        }
+    }
 }
 
-/* Start Level */
+function unlockCheck(level){
+    if(unlockedLevels.includes(level)){
+        startLevel(level);
+    } else{
+        alert("You need to complete previous levels first! 💖");
+    }
+}
+
 function startLevel(n){
     show("levelScreen");
-    document.getElementById("levelTitle").innerText = "Level " + n;
-
-    if(n === 1) loadLevel1();
-    if(n === 2) loadLevel2();
-    if(n === 3) loadLevel3();
-    if(n === 4) loadLevel4();
-    if(n === 5) loadLevel5();
+    document.getElementById("title").innerText = "Level " + n;
+    if(n===1) level1();
+    if(n===2) level2();
+    if(n===3) level3();
+    if(n===4) level4();
+    if(n===5) level5();
 }
 
-/* ---------------- LEVEL 1 : Memory Game ---------------- */
-function loadLevel1(){
-    let emojis = ["💖","💖","😍","😍","😘","😘","🐻","🐻"];
-    emojis.sort(() => Math.random()-0.5);
-
-    let html = "<div class='cards'>";
-    emojis.forEach((e,i)=> html += `<div class='card' id='c${i}' onclick='flip(${i},"${e}")'>?</div>`);
-    html += "</div>";
-    document.getElementById("levelContent").innerHTML = html;
-
-    window.first = null;
-    window.second = null;
-    window.matched = 0;
+/* Level 1: Memory */
+function level1(){
+    let emojis=["💖","💖","😍","😍","😘","😘","🐻","🐻","💗","💗","💕","💕"];
+    emojis.sort(()=>Math.random()-0.5);
+    let html="<div class='grid'>";
+    emojis.forEach((e,i)=> html+=`<div class='card' id='c${i}' onclick='flip(${i},"${e}",1)'>?</div>`);
+    html+="</div>";
+    document.getElementById("content").innerHTML=html;
+    window.first=null;
+    window.second=null;
+    window.matched=0;
 }
-
-function flip(id, emoji){
-    let card = document.getElementById("c"+id);
-    if(card.innerText !== "?") return;
-
-    card.innerText = emoji;
-
-    if(!first) first = {id,emoji};
-    else {
-        second = {id,emoji};
+function flip(id,emoji,level){
+    let card=document.getElementById("c"+id);
+    if(card.innerText!=="?") return;
+    card.innerText=emoji;
+    if(!first) first={id,emoji};
+    else{
+        second={id,emoji};
         setTimeout(()=>{
-            if(first.emoji === second.emoji){
-                matched += 2;
-                if(matched === 8) setTimeout(()=>startLevel(2),600);
-            } else {
-                document.getElementById("c"+first.id).innerText = "?";
-                document.getElementById("c"+second.id).innerText = "?";
+            if(first.emoji===second.emoji){
+                matched+=2;
+                createConfetti();
+                if(level===1 && matched===12){
+                    unlockedLevels.push(2);
+                    updateLevelButtons();
+                    startLevel(2);
+                }
+            }else{
+                document.getElementById("c"+first.id).innerText="?";
+                document.getElementById("c"+second.id).innerText="?";
             }
-            first = null; second = null;
+            first=null;second=null;
         },600);
     }
 }
 
-/* ---------------- LEVEL 2: Find Emoji ---------------- */
-function loadLevel2(){
-    let target = "💗";
-    let grid = "";
-    for(let i=0; i<40; i++){
-        let e = (Math.random() < .1) ? target : "✨";
-        grid += `<span style='font-size:30px; margin:5px; cursor:pointer;' onclick='checkEmoji("${e}")'>${e}</span>`;
+/* Level 2: Find 💗 */
+function level2(){
+    let target="💗";
+    let html="<h3>FIND: 💗 (Only ONE correct!) 🌸✨💞</h3>";
+    for(let i=0;i<60;i++){
+        let e=Math.random()<0.04?target:["✨","🌸","💞","⭐"][Math.floor(Math.random()*4)];
+        html+=`<span onclick='findCheck("${e}")' style='font-size:32px;margin:6px;cursor:pointer;'>${e}</span>`;
     }
-    document.getElementById("levelContent").innerHTML =
-        "<h3>Find this: 💗</h3>" + grid;
+    document.getElementById("content").innerHTML=html;
 }
-
-function checkEmoji(e){
-    if(e === "💗"){
+function findCheck(e){
+    if(e==="💗"){
+        unlockedLevels.push(3);
+        updateLevelButtons();
+        createConfetti();
         startLevel(3);
     }
 }
 
-/* ---------------- LEVEL 3: Tap Hearts ---------------- */
-function loadLevel3(){
-    let hearts = "";
-    for(let i=0; i<15; i++){
-        hearts += `<span onclick='tapHeart(this)' style='font-size:35px; margin:8px; cursor:pointer;'>💖</span>`;
-    }
-    document.getElementById("levelContent").innerHTML = 
-        "<h3>Tap all the 💖 hearts!</h3>" + hearts;
-}
-function tapHeart(el){
-    el.remove();
-    if(document.querySelectorAll("#levelContent span").length === 0){
-        startLevel(4);
-    }
+/* Level 3: Dodge Falling Skulls */
+function level3(){
+    document.getElementById("content").innerHTML="<h3>Dodge 💀 and tap 5 falling 💖</h3><h2 id='score'>0 / 5</h2>";
+    let score=0;
+    let fall=setInterval(()=>{
+        let good=Math.random()<0.6;
+        let e=good?"💖":"💀";
+        let h=document.createElement("div");
+        h.className="fallHeart";
+        h.style.left=Math.random()*80+"vw";
+        h.innerText=e;
+        document.body.appendChild(h);
+        h.onclick=()=>{
+            if(e==="💀"){
+                alert("Oops! Hit a skull! Restarting level.");
+                clearInterval(fall);
+                document.querySelectorAll(".fallHeart").forEach(x=>x.remove());
+                startLevel(3);
+            }else{
+                score++;
+                document.getElementById("score").innerText=score+" / 5";
+                h.remove();
+                if(score>=5){
+                    clearInterval(fall);
+                    document.querySelectorAll(".fallHeart").forEach(x=>x.remove());
+                    unlockedLevels.push(4);
+                    updateLevelButtons();
+                    createConfetti();
+                    startLevel(4);
+                }
+            }
+        };
+        setTimeout(()=>h.remove(),3000);
+    },600);
 }
 
-/* ---------------- LEVEL 4: Avoid Wrong Emoji ---------------- */
-function loadLevel4(){
-    document.getElementById("levelContent").innerHTML =
-        "<h3>Tap ONLY ❤️ — avoid 💀</h3>";
-
+/* Level 4: Tap ❤️ Fast */
+function level4(){
+    document.getElementById("content").innerHTML="<h3>Tap 20 ❤️ FAST!</h3>";
     for(let i=0;i<20;i++){
-        let good = Math.random()<.5;
-        let e = good ? "❤️" : "💀";
-        document.getElementById("levelContent").innerHTML +=
-            `<span onclick='chooseEmoji("${e}")' style='font-size:40px; margin:7px; cursor:pointer;'>${e}</span>`;
-    }
-}
-function chooseEmoji(e){
-    if(e==="💀"){
-        alert("Oops! Try again 😭");
-        startLevel(4);
-        return;
-    }
-    let left = document.querySelectorAll("#levelContent span");
-    if(left.length <= 1){
-        startLevel(5);
+        let heart=document.createElement("span");
+        heart.innerText="❤️";
+        heart.style.fontSize="36px";
+        heart.style.cursor="pointer";
+        heart.style.margin="7px";
+        heart.onclick=function(){
+            heart.remove();
+            if(document.querySelectorAll("#content span").length===0){
+                unlockedLevels.push(5);
+                updateLevelButtons();
+                createConfetti();
+                startLevel(5);
+            }
+        };
+        document.getElementById("content").appendChild(heart);
     }
 }
 
-/* ---------------- LEVEL 5: Final gift ---------------- */
-function loadLevel5(){
-    document.getElementById("levelContent").innerHTML =
-        "<h2>You're almost there! 🎀</h2><p>Tap the button for your surprise!</p><button class='btn' onclick='showSurprise()'>🎁 Show Surprise</button>";
+/* Level 5: Final Surprise */
+function level5(){
+    document.getElementById("content").innerHTML=
+        "<h2>You're ready for your surprise 🎁</h2><button class='btn' onclick='showSurprise()'>Open Surprise</button>";
 }
 
-function showSurprise(){
-    show("surprise");
-}
+function showSurprise(){ show("surprise"); }
 
-/* ---------------- Surprise ---------------- */
+/* Open Gift */
 function openGift(){
-    document.getElementById("giftBox").style.display = "none";
-    document.getElementById("finalMessage").innerHTML =
-        "Happiest birthday babiee I love you sooo much kuchiipuchiii nonii kukkiiiiii 😘😘😘😘💖💖💖";
+    document.getElementById("gift").style.display="none";
+    document.getElementById("finalMsg").innerHTML=
+        "Happiest birthday babiee I love you sooo much kuchiipuchiii nonii kukkiiiiii 😘😘😘💖💖💖";
+    for(let i=0;i<100;i++) createConfetti();
+}
+
+/* Confetti */
+function createConfetti(){
+    let c=document.createElement("div");
+    c.className="confetti";
+    c.style.background=randomColor();
+    c.style.left=Math.random()*100+"vw";
+    c.style.width=c.style.height=5+Math.random()*10+"px";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3000);
+}
+function randomColor(){
+    let colors=["#ff5eeb","#ff8c42","#ffc93c","#42f5b1","#4287f5"];
+    return colors[Math.floor(Math.random()*colors.length)];
 }
 </script>
-
 </body>
 </html>
