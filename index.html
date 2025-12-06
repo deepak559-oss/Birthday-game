@@ -25,17 +25,13 @@
       text-align:center;
       min-height:100vh;
       padding:24px;
-      -webkit-tap-highlight-color: transparent;
     }
-    header{
-      margin-bottom:10px;
-    }
+    header{margin-bottom:10px;}
     h1{
-      font-family:'Baloo 2', 'Poppins', sans-serif;
+      font-family:'Baloo 2';
       font-size:36px;
       margin:8px 0;
       color: var(--accent);
-      text-shadow: 0 4px 10px rgba(255,77,166,0.12);
     }
     .subtitle{
       font-size:15px;
@@ -43,19 +39,10 @@
       color:#6d4159;
     }
 
-    /* card area */
-    #game-area{
-      max-width:900px;
-      margin:0 auto;
-      padding:16px;
-    }
-    .stage{
-      display:none;
-      margin-top:12px;
-    }
-    .stage.active{display:block}
+    #game-area{ max-width:900px; margin:0 auto; padding:16px;}
+    .stage{ display:none; }
+    .stage.active{ display:block; }
 
-    /* Level 1 grid */
     .grid{
       display:grid;
       gap:12px;
@@ -63,8 +50,8 @@
       margin:0 auto;
       padding:8px;
     }
-    /* responsive grid columns */
     .grid.grid-4{grid-template-columns: repeat(4, minmax(60px, 90px));}
+
     .card{
       width:100%;
       aspect-ratio:1/1;
@@ -78,10 +65,11 @@
       cursor:pointer;
       position:relative;
       transform-style:preserve-3d;
-      transition: transform .45s cubic-bezier(.2,.9,.2,1);
+      transition: transform .45s;
       user-select:none;
     }
-    .card.flipped{ transform: rotateY(180deg); cursor:default;}
+    .card.flipped{ transform: rotateY(180deg); }
+
     .card .face{
       position:absolute;
       inset:0;
@@ -92,21 +80,15 @@
       backface-visibility:hidden;
     }
     .card .front{
-      background:linear-gradient(180deg,#fff,#fff0f3);
+      background:#fff;
       font-size:36px;
     }
     .card .back{
       transform: rotateY(180deg);
-      background:linear-gradient(180deg,#fff7fb,#ffecf7);
-      color:#ff4da6;
-      font-size:28px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:6px;
+      background:#fff7fb;
+      font-size:34px;
     }
 
-    /* info bar */
     .info{
       display:flex;
       gap:12px;
@@ -130,10 +112,8 @@
       border-radius:12px;
       font-weight:600;
       cursor:pointer;
-      box-shadow: 0 8px 18px rgba(255,77,166,0.18);
     }
 
-    /* Level 2 grid (crowded) */
     .grid.grid-6{grid-template-columns: repeat(6, minmax(40px, 64px));}
     .small-emoji{
       font-size:26px;
@@ -144,544 +124,342 @@
       cursor:pointer;
     }
 
-    /* Level 3 arena */
     #arena{
       position:relative;
       height:420px;
       margin:14px auto;
-      background: linear-gradient(180deg,#fff7fb,#fff0f6);
+      background:#fff7fb;
       border-radius:16px;
       overflow:hidden;
-      box-shadow: 0 10px 30px rgba(102,43,73,0.06);
-      touch-action: none;
     }
-    .floating {
+    .floating{
       position:absolute;
       font-size:28px;
-      will-change: transform;
-      cursor:pointer;
       user-select:none;
+      cursor:pointer;
     }
 
-    /* final message */
-    #finalScreen{
-      padding:18px;
-      display:none;
-    }
+    #finalScreen{ display:none; padding:18px; }
     .finalCard{
-      background:linear-gradient(180deg,#ffffff,#fff5fb);
-      border-radius:16px;
+      background:#fff;
       padding:20px;
-      box-shadow: 0 14px 40px rgba(102,43,73,0.06);
+      border-radius:16px;
+      box-shadow:0 10px 20px rgba(0,0,0,0.06);
       display:inline-block;
     }
     .finalText{
-      font-family:'Baloo 2', 'Poppins';
+      font-family:'Baloo 2';
       font-size:28px;
       color:#c72b74;
-      line-height:1.2;
     }
 
-    /* sparkles / hearts */
-    .sparkle {
+    .sparkle{
       position:fixed;
       pointer-events:none;
       font-size:18px;
       opacity:0.9;
       z-index:9999;
     }
-
-    footer{margin-top:18px; font-size:13px; color:#7a4b66}
-
-    /* small screens */
-    @media (max-width:520px){
-      .grid.grid-4{grid-template-columns: repeat(4, minmax(46px, 64px)); gap:8px;}
-      .grid.grid-6{grid-template-columns: repeat(4, minmax(40px, 56px));}
-      h1{font-size:28px}
-      .finalText{font-size:22px}
-      #arena{height:320px}
-    }
   </style>
 </head>
-<body>
-  <header>
-    <h1>🎉 Cute Birthday Quest 🎉</h1>
-    <div class="subtitle">3 hard levels — memory, find-it, and a fast heart-chase. Good luck! 💗</div>
-  </header>
 
-  <main id="game-area">
-    <!-- Info + Controls -->
-    <div class="info">
-      <div class="chip" id="levelChip">Level 1</div>
-      <div class="chip" id="movesChip">Moves: 0</div>
-      <div class="chip" id="timerChip" style="display:none">Time: 00:00</div>
-      <button class="btn" id="resetBtn" onclick="restartAll()">Restart</button>
+<body>
+<header>
+  <h1>🎉 Cute Birthday Quest 🎉</h1>
+  <div class="subtitle">3 cute + hard levels 💗</div>
+</header>
+
+<main id="game-area">
+
+  <div class="info">
+    <div class="chip" id="levelChip">Level 1</div>
+    <div class="chip" id="movesChip">Moves: 0</div>
+    <div class="chip" id="timerChip" style="display:none">Time: 00:00</div>
+    <button class="btn" id="resetBtn" onclick="restartAll()">Restart</button>
+  </div>
+
+  <!-- LEVEL 1 -->
+  <section id="level1" class="stage active">
+    <h2 style="font-size:20px;color:#6d4159;margin:8px 0">Level 1 — Memory Match (8 pairs)</h2>
+    <div id="grid1" class="grid grid-4"></div>
+    <button class="btn" id="nextTo2Btn" style="display:none;margin-top:12px;">Go to Level 2</button>
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section id="level2" class="stage">
+    <h2 style="font-size:20px;color:#6d4159;margin:8px 0">Level 2 — Find the exact emoji</h2>
+    <p>Find: <strong id="targetLabel">🎂</strong></p>
+    <div id="grid2" class="grid grid-6"></div>
+
+    <div class="info" style="margin-top:12px;">
+      <div class="chip" id="attemptsChip">Attempts left: 6</div>
+      <div class="chip" id="time2Chip">Time: 40</div>
     </div>
 
-    <!-- LEVEL 1: Memory card flip (8 pairs => 16 cards) -->
-    <section id="level1" class="stage active">
-      <h2 style="font-size:20px; color:#6d4159; margin:8px 0">Level 1 — Memory Match (8 pairs)</h2>
-      <p style="margin:6px 0 12px; color:#8a5a74">Flip cards and find all matching pairs. Try to use as few moves as possible! ✨</p>
+    <button class="btn" id="nextTo3Btn" style="display:none;margin-top:12px;">Go to Level 3</button>
+  </section>
 
-      <div id="grid1" class="grid grid-4" aria-label="Memory cards"></div>
+  <!-- LEVEL 3 -->
+  <section id="level3" class="stage">
+    <h2 style="font-size:20px;">Level 3 — Heart Chase</h2>
+    <div id="arena"></div>
+    <div class="info">
+      <div class="chip">Hearts: <span id="heartsCount">0</span>/12</div>
+      <div class="chip">Strikes: <span id="strikes">0</span>/5</div>
+      <div class="chip" id="time3Chip">Time: 40s</div>
+    </div>
+  </section>
 
-      <div style="margin-top:12px">
-        <button class="btn" id="nextTo2Btn" style="display:none" onclick="startLevel2()">Go to Level 2</button>
-      </div>
-    </section>
+  <!-- FINAL SCREEN -->
+  <section id="finalScreen">
+    <div class="finalCard">
+      <div class="finalText">🎀💗 Happiest birthday babiee 💗🎀</div>
+      <div style="font-size:18px;color:#7a425f;margin-top:8px">I love you sooo much 💞✨</div>
+      <button class="btn" onclick="restartAll()" style="margin-top:14px;">Play again</button>
+    </div>
+  </section>
 
-    <!-- LEVEL 2: Find-the-correct-emoji -->
-    <section id="level2" class="stage">
-      <h2 style="font-size:20px; color:#6d4159; margin:8px 0">Level 2 — Find the exact emoji</h2>
-      <p style="margin:6px 0 12px; color:#8a5a74">Among many similar treats, find the <strong id="targetLabel">🎂</strong> — only one exact match. You get limited attempts! 🍰</p>
+<script>/* SPARKLES */
+const sparkleEmoji = ['✨','💫','🌟'];
+function spawnSparkle(){
+  const el=document.createElement('div');
+  el.className='sparkle';
+  el.textContent=sparkleEmoji[Math.random()*sparkleEmoji.length|0];
+  el.style.left=(Math.random()*90)+'%';
+  el.style.top=(Math.random()*70)+'%';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2000);
+}
+setInterval(spawnSparkle,800);
 
-      <div id="grid2" class="grid grid-6" aria-label="Puzzle grid"></div>
+const q=id=>document.getElementById(id);
 
-      <div style="margin-top:12px" class="info">
-        <div class="chip" id="attemptsChip">Attempts left: 6</div>
-        <div class="chip" id="time2Chip">Timer: 00</div>
-      </div>
+/* LEVEL 1 */
+const emojisL1=['🎂','🧁','🍪','🍩','🍓','🍰','🍬','🍭'];
+let first=null, second=null, lock=false, matches=0, moves=0;
 
-      <div style="margin-top:12px">
-        <button class="btn" id="nextTo3Btn" style="display:none" onclick="startLevel3()">Go to Level 3</button>
-      </div>
-    </section>
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-    <!-- LEVEL 3: Heart chase -->
-    <section id="level3" class="stage">
-      <h2 style="font-size:20px; color:#6d4159; margin:8px 0">Level 3 — Heart Chase</h2>
-      <p style="margin:6px 0 12px; color:#8a5a74">Click the moving 💗 hearts. Avoid clicking wrong emojis. Collect <strong>12</strong> hearts before time runs out — speed increases!</p>
-      <div id="arena"></div>
+function buildLevel1(){
+  const grid=q('grid1'); grid.innerHTML='';
+  matches=0; moves=0; q('movesChip').textContent='Moves: 0';
+  const arr=shuffle([...emojisL1,...emojisL1]);
 
-      <div style="margin-top:12px" class="info">
-        <div class="chip">Hearts: <span id="heartsCount">0</span>/12</div>
-        <div class="chip">Strikes: <span id="strikes">0</span>/5</div>
-        <div class="chip" id="time3Chip">Time: 40s</div>
-      </div>
-    </section>
+  arr.forEach(em=>{
+    const c=document.createElement('div');
+    c.className='card';
+    c.innerHTML=`<div class="face front">❓</div><div class="face back">${em}</div>`;
+    c.dataset.emoji=em;
+    c.onclick=()=>flipCard(c);
+    grid.appendChild(c);
+  });
+}
 
-    <!-- FINAL MESSAGE -->
-    <section id="finalScreen">
-      <div class="finalCard">
-        <div class="finalText">🎀💗 Happiest birthday babiee 💗🎀</div>
-        <div style="margin-top:10px; font-size:18px; color:#7a425f">I love you sooo much 💞✨</div>
-        <div style="margin-top:14px">
-          <button class="btn" onclick="restartAll()">Play again</button>
-        </div>
-      </div>
-    </section>
+function flipCard(c){
+  if(lock||c.classList.contains('flipped'))return;
+  c.classList.add('flipped');
+  if(!first){first=c; return;}
+  second=c; moves++; q('movesChip').textContent='Moves: '+moves;
+  checkMatch();
+}
 
-    <footer>Made with 💖 — scan, play, and surprise! </footer>
-  </main>
+function checkMatch(){
+  if(first.dataset.emoji===second.dataset.emoji){
+    matches++;
+    setTimeout(()=>{
+      first.style.visibility='hidden';
+      second.style.visibility='hidden';
+      first=null; second=null;
+      if(matches===8) level1Done();
+    },400);
+  } else {
+    lock=true;
+    setTimeout(()=>{
+      first.classList.remove('flipped');
+      second.classList.remove('flipped');
+      first=null; second=null; lock=false;
+    },700);
+  }
+}
 
-  <script>
-    /* -------------------------
-       Shared helpers & visuals
-       ------------------------- */
-    const accent = '#ff4da6';
-    const sparkleEmoji = ['✨','💫','🌟'];
-    // simple sparkle generator
-    function spawnSparkle(){
-      const el = document.createElement('div');
-      el.className='sparkle';
-      el.textContent = sparkleEmoji[Math.floor(Math.random()*sparkleEmoji.length)];
-      el.style.left = (Math.random()*90)+'%';
-      el.style.top = (10 + Math.random()*60)+'%';
-      document.body.appendChild(el);
-      setTimeout(()=> el.remove(), 2500);
+function level1Done(){
+  q('nextTo2Btn').style.display='inline-block';
+  q('levelChip').textContent='Level 1 — done!';
+}
+
+/* LEVEL 2 */
+let target='🎂', attempts=6, t2=40, t2int=null;
+
+function startLevel2Actual(){
+  q('level1').classList.remove('active');
+  q('level2').classList.add('active');
+  q('levelChip').textContent='Level 2';
+
+  attempts=6; t2=40;
+  q('attemptsChip').textContent='Attempts left: 6';
+  q('time2Chip').textContent='Time: 40';
+
+  const targets=['🎂','🧁','🍰'];
+  target=targets[Math.random()*targets.length|0];
+  q('targetLabel').textContent=target;
+
+  const grid=q('grid2'); grid.innerHTML='';
+
+  const total=36;
+  const pos= Math.random()*total|0;
+
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='small-emoji';
+    if(i===pos){
+      d.textContent=target;
+      d.dataset.ok=1;
+    } else {
+      const pool=['🧁','🍰','🍪','🍩','🍫','🍬','🍭','🍨','🍧','🍦','🍯','🍒','🍓','🍮'];
+      d.textContent=pool[Math.random()*pool.length|0];
     }
-    setInterval(spawnSparkle, 700);
+    d.onclick=()=>pickL2(d);
+    grid.appendChild(d);
+  }
 
-    function qsel(id){return document.getElementById(id);}
-
-    /* -------------------------
-       LEVEL 1: Memory (8 pairs)
-       ------------------------- */
-    const emojisL1 = ['🎂','🧁','🍪','🍩','🍓','🍰','🍬','🍭']; // 8 distinct
-    let cardEmojis = [];
-    let firstCard = null, secondCard = null;
-    let lockBoard = false;
-    let matches = 0;
-    let moves = 0;
-
-    function shuffle(a){
-      for(let i=a.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [a[i],a[j]]=[a[j],a[i]];
-      }
-      return a;
+  if(t2int)clearInterval(t2int);
+  t2int=setInterval(()=>{
+    t2--; q('time2Chip').textContent='Time: '+t2;
+    if(t2<=0){
+      clearInterval(t2int);
+      alert("Time's up! Try again 💗");
+      startLevel2Actual();
     }
+  },1000);
+}
 
-    function buildLevel1(){
-      const grid = qsel('grid1');
-      grid.innerHTML='';
-      cardEmojis = shuffle([...emojisL1, ...emojisL1]); // 16
-      matches = 0; moves = 0;
-      qsel('movesChip').textContent = 'Moves: 0';
-      qsel('levelChip').textContent='Level 1';
-      cardEmojis.forEach((em,i)=>{
-        const card = document.createElement('div');
-        card.className='card';
-        card.dataset.emoji = em;
-        card.dataset.index = i;
-        card.innerHTML = `
-          <div class="face front">❓</div>
-          <div class="face back">${em}</div>
-        `;
-        card.addEventListener('click', ()=> flipCard(card));
-        grid.appendChild(card);
-      });
+function pickL2(el){
+  if(el.dataset.ok){
+    clearInterval(t2int);
+    q('nextTo3Btn').style.display='inline-block';
+    q('attemptsChip').textContent='Found it! 🎉';
+    return;
+  }
+  attempts--;
+  q('attemptsChip').textContent='Attempts left: '+attempts;
+  el.style.opacity='0.4';
+  el.style.pointerEvents='none';
+  if(attempts<=0){
+    clearInterval(t2int);
+    alert("Out of attempts! Try again 💫");
+    startLevel2Actual();
+  }
+}
+
+/* LEVEL 3 */
+const arena=q('arena');
+let h=0, s=0, t3=40, intA=null, intM=null, intT=null;
+
+function startLevel3Actual(){
+  q('level2').classList.remove('active');
+  q('level3').classList.add('active');
+  q('levelChip').textContent='Level 3';
+  arena.innerHTML=''; h=0; s=0; t3=40;
+  q('heartsCount').textContent=h;
+  q('strikes').textContent=s;
+  q('time3Chip').textContent='Time: 40s';
+
+  intA=setInterval(spawnObj,700);
+  intM=setInterval(moveObjs,50);
+  intT=setInterval(()=>{
+    t3--; q('time3Chip').textContent='Time: '+t3+'s';
+    if(t3<=0) end3(false);
+  },1000);
+}
+
+function rnd(a,b){return a+Math.random()*(b-a);}
+
+function spawnObj(){
+  const ok=Math.random()<0.55;
+  const d=document.createElement('div');
+  d.className='floating';
+  d.style.left=rnd(5,85)+'%';
+  d.style.top=rnd(5,85)+'%';
+  d.dataset.vx=(Math.random()>0.5?1:-1)*(0.6+Math.random()*1.6);
+  d.dataset.vy=(Math.random()>0.5?1:-1)*(0.6+Math.random()*1.6);
+
+  if(ok){
+    d.textContent='💗';
+    d.dataset.type='heart';
+  } else {
+    const wrong=['💀','👾','🍕','🍪','🔥','🐱','🍓','👀'];
+    d.textContent=wrong[Math.random()*wrong.length|0];
+    d.dataset.type='bad';
+  }
+
+  d.onclick=e=>{
+    e.stopPropagation();
+    if(d.dataset.type==='heart'){
+      h++; q('heartsCount').textContent=h;
+      d.remove();
+      if(h>=12) end3(true);
+    } else {
+      s++; q('strikes').textContent=s;
+      t3=Math.max(0,t3-4);
+      q('time3Chip').textContent='Time: '+t3+'s';
+      d.remove();
+      if(s>=5) end3(false);
     }
+  };
+  arena.appendChild(d);
+  setTimeout(()=>d.remove(),9000);
+}
 
-    function flipCard(card){
-      if(lockBoard) return;
-      if(card.classList.contains('flipped')) return;
-      card.classList.add('flipped');
-      if(!firstCard){
-        firstCard = card; return;
-      }
-      secondCard = card;
-      moves++;
-      qsel('movesChip').textContent = 'Moves: '+moves;
-      checkMatch();
-    }
+function moveObjs(){
+  [...arena.children].forEach(o=>{
+    let l=parseFloat(o.style.left), t=parseFloat(o.style.top);
+    let vx=parseFloat(o.dataset.vx), vy=parseFloat(o.dataset.vy);
+    l+=vx; t+=vy;
+    if(l<2){ l=2; o.dataset.vx=Math.abs(vx);}
+    if(l>94){l=94; o.dataset.vx=-Math.abs(vx);}
+    if(t<2){ t=2; o.dataset.vy=Math.abs(vy);}
+    if(t>94){t=94; o.dataset.vy=-Math.abs(vy);}
+    o.style.left=l+'%';
+    o.style.top=t+'%';
+  });
+}
 
-    function checkMatch(){
-      const a = firstCard.dataset.emoji, b = secondCard.dataset.emoji;
-      if(a === b){
-        // matched
-        firstCard.removeEventListener('click', ()=>flipCard(firstCard));
-        secondCard.removeEventListener('click', ()=>flipCard(secondCard));
-        matches++;
-        // small pop
-        setTimeout(()=> {
-          firstCard.style.visibility='hidden';
-          secondCard.style.visibility='hidden';
-          firstCard=null; secondCard=null;
-          if(matches >= 8) level1Complete();
-        }, 450);
-      } else {
-        lockBoard = true;
-        setTimeout(()=> {
-          firstCard.classList.remove('flipped');
-          secondCard.classList.remove('flipped');
-          firstCard=null; secondCard=null;
-          lockBoard = false;
-        }, 800);
-      }
-    }
+function end3(ok){
+  clearInterval(intA); clearInterval(intM); clearInterval(intT);
+  if(ok){
+    q('level3').classList.remove('active');
+    q('finalScreen').style.display='block';
+  } else {
+    alert("Try again 💗");
+    startLevel3Actual();
+  }
+}
 
-    function level1Complete(){
-      qsel('nextTo2Btn').style.display='inline-block';
-      qsel('levelChip').textContent='Level 1 — Done!';
-      // confetti-like hearts
-      for(let i=0;i<20;i++){
-        setTimeout(()=> {
-          const h = document.createElement('div');
-          h.className='sparkle';
-          h.textContent = '💖';
-          h.style.left = (10 + Math.random()*80)+'%';
-          h.style.top = (20 + Math.random()*60)+'%';
-          document.body.appendChild(h);
-          setTimeout(()=>h.remove(),1500);
-        }, i*60);
-      }
-    }
+/* RESTART */
+function restartAll(){
+  clearInterval(intA);clearInterval(intM);clearInterval(intT);
+  clearInterval(t2int);
 
-    /* -------------------------
-       LEVEL 2: Find-the-correct-emoji (hard)
-       ------------------------- */
-    // We pick a target and populate grid with many similar ones. Only one exact match.
-    const grid2 = qsel('grid2');
-    const allCandidates = [
-      '🎂','🧁','🍰','🍮','🍩','🍪','🧁','🍫','🍬','🍭','🍯','🍨','🥧','🍦','🍧','🍒','🍓','🍰','🧁','🍪','🍩'
-    ];
-    let targetEmoji = '🎂';
-    let attemptsLeft = 6;
-    let level2Timer = 40;
-    let level2Interval = null;
+  q('finalScreen').style.display='none';
+  q('nextTo2Btn').style.display='none';
+  q('nextTo3Btn').style.display='none';
 
-    function startLevel2(){
-      // hide level1, show level2
-      qsel('level1').classList.remove('active');
-      qsel('level2').classList.add('active');
-      qsel('levelChip').textContent='Level 2';
-      attemptsLeft = 6;
-      level2Timer = 40;
-      qsel('attemptsChip').textContent = 'Attempts left: '+attemptsLeft;
-      qsel('time2Chip').textContent = 'Timer: '+level2Timer;
-      // select a target that is slightly tricky: choose from cake family
-      const possibleTargets = ['🎂','🧁','🍰'];
-      targetEmoji = possibleTargets[Math.floor(Math.random()*possibleTargets.length)];
-      qsel('targetLabel').textContent = targetEmoji;
-      // build a crowded grid - 36 items
-      grid2.innerHTML='';
-      // place one exact match in a random slot
-      const total = 36; // 6x6-ish
-      const indexTarget = Math.floor(Math.random()*total);
-      for(let i=0;i<total;i++){
-        const cell = document.createElement('div');
-        cell.className='small-emoji';
-        // often place similar distractors to make it hard
-        if(i === indexTarget){
-          cell.textContent = targetEmoji;
-          cell.dataset.correct = '1';
-        } else {
-          // pick similar-looking or visually confusing emoji
-          const pool = ['🧁','🍰','🍪','🍩','🍫','🍬','🍭','🍨','🍧','🍦','🍯','🍒','🍓','🍮','🥮'];
-          // bias to ones that look like sweets
-          cell.textContent = pool[Math.floor(Math.random()*pool.length)];
-        }
-        cell.addEventListener('click', level2Pick);
-        grid2.appendChild(cell);
-      }
-      // start timer
-      if(level2Interval) clearInterval(level2Interval);
-      level2Interval = setInterval(()=>{
-        level2Timer--;
-        qsel('time2Chip').textContent = 'Timer: '+level2Timer;
-        if(level2Timer <= 0){
-          clearInterval(level2Interval);
-          // fail -> restart level 2
-          alert('Time up! Try Level 2 again 💗');
-          startLevel2(); // restart
-        }
-      },1000);
-    }
+  q('level3').classList.remove('active');
+  q('level2').classList.remove('active');
+  q('level1').classList.add('active');
 
-    function level2Pick(e){
-      const el = e.currentTarget;
-      if(el.dataset.correct === '1'){
-        // success
-        clearInterval(level2Interval);
-        qsel('nextTo3Btn').style.display='inline-block';
-        qsel('attemptsChip').textContent = 'Found it! 🎉';
-        el.style.background = '#fff0f3';
-        // small effect
-        for(let i=0;i<12;i++){
-          setTimeout(()=> {
-            const s = document.createElement('div');
-            s.className='sparkle';
-            s.textContent = ['✨','💖','🌸'][Math.floor(Math.random()*3)];
-            s.style.left = (20 + Math.random()*60)+'%';
-            s.style.top = (20 + Math.random()*60)+'%';
-            document.body.appendChild(s);
-            setTimeout(()=>s.remove(),1200);
-          }, i*40);
-        }
-      } else {
-        attemptsLeft--;
-        qsel('attemptsChip').textContent = 'Attempts left: '+attemptsLeft;
-        el.style.opacity = '0.4';
-        el.style.pointerEvents = 'none';
-        if(attemptsLeft <= 0){
-          clearInterval(level2Interval);
-          alert('Out of attempts! Restarting Level 2 💫');
-          startLevel2();
-        }
-      }
-    }
+  q('levelChip').textContent='Level 1';
 
-    /* -------------------------
-       LEVEL 3: Heart chase (hard)
-       ------------------------- */
-    const arena = qsel('arena');
-    let heartsCollected = 0, strikes = 0, timeLeft3 = 40;
-    let arenaInterval = null;
-    let spawnInterval = null;
-    let moveInterval = null;
-    const maxStrikes = 5;
-    const goalHearts = 12;
+  buildLevel1();
+}
 
-    function startLevel3(){
-      // switch screens
-      qsel('level2').classList.remove('active');
-      qsel('level3').classList.add('active');
-      qsel('levelChip').textContent='Level 3';
-      heartsCollected = 0;
-      strikes = 0;
-      timeLeft3 = 40;
-      qsel('heartsCount').textContent = heartsCollected;
-      qsel('strikes').textContent = strikes;
-      qsel('time3Chip').textContent = 'Time: '+timeLeft3+'s';
-      arena.innerHTML = '';
-      arena.style.touchAction = 'manipulation';
+/* BUTTON HOOKS */
+q('nextTo2Btn').onclick = startLevel2Actual;
+q('nextTo3Btn').onclick = startLevel3Actual;
 
-      // spawn & move objects faster for harder difficulty
-      spawnInterval = setInterval(spawnObject, 700); // spawn often
-      moveInterval = setInterval(moveObjects, 50);
-      arenaInterval = setInterval(()=>{
-        timeLeft3--;
-        qsel('time3Chip').textContent = 'Time: '+timeLeft3+'s';
-        if(timeLeft3 <= 0){
-          endLevel3(false);
-        }
-      },1000);
-    }
-
-    function rand(min,max){ return min + Math.random()*(max-min); }
-
-    function spawnObject(){
-      // spawn either heart (good) or wrong (bad)
-      const isHeart = Math.random() < 0.55; // hearts slightly more frequent
-      const el = document.createElement('div');
-      el.className = 'floating';
-      el.style.left = rand(6,84) + '%';
-      el.style.top = rand(6,84) + '%';
-      el.style.transform = `translate(0,0)`;
-      el.dataset.vx = (Math.random()>0.5?1:-1)*(0.6 + Math.random()*1.8);
-      el.dataset.vy = (Math.random()>0.5?1:-1)*(0.6 + Math.random()*1.8);
-      if(isHeart){
-        el.textContent = '💗';
-        el.dataset.type='heart';
-        el.style.fontSize = (22 + Math.random()*16) + 'px';
-      } else {
-        // pick confusing wrong emoji
-        const wrongs = ['🍕','💀','👾','👀','🍩','🍪','💣','🐱','🍓','🌵','🔥'];
-        el.textContent = wrongs[Math.floor(Math.random()*wrongs.length)];
-        el.dataset.type='bad';
-        el.style.fontSize = (20 + Math.random()*12) + 'px';
-      }
-      // behavior on click
-      el.addEventListener('click', (ev)=> {
-        ev.stopPropagation();
-        const t = el.dataset.type;
-        if(t === 'heart'){
-          heartsCollected++;
-          qsel('heartsCount').textContent = heartsCollected;
-          el.remove();
-          // speed ramp: every 3 hearts, increase spawn frequency slightly
-          if(heartsCollected % 3 === 0){
-            // accelerate spawn a bit
-            if(spawnInterval) { clearInterval(spawnInterval);
-              spawnInterval = setInterval(spawnObject, Math.max(300, 700 - heartsCollected*25));
-            }
-          }
-          if(heartsCollected >= goalHearts){
-            endLevel3(true);
-          }
-        } else {
-          // clicked bad => strike
-          strikes++;
-          qsel('strikes').textContent = strikes;
-          el.remove();
-          // penalty: lose 4 seconds
-          timeLeft3 = Math.max(0, timeLeft3 - 4);
-          qsel('time3Chip').textContent = 'Time: '+timeLeft3+'s';
-          if(strikes >= maxStrikes){
-            endLevel3(false);
-          }
-        }
-      });
-      arena.appendChild(el);
-      // auto-remove after some time to keep arena tidy
-      setTimeout(()=> { if(el.parentNode) el.remove(); }, 12000);
-    }
-
-    function moveObjects(){
-      const objs = Array.from(arena.children);
-      const rect = arena.getBoundingClientRect();
-      objs.forEach(o=>{
-        // parse numeric values
-        let left = parseFloat(o.style.left);
-        let top = parseFloat(o.style.top);
-        // convert percent to px-based movement using rect width/height
-        const vx = parseFloat(o.dataset.vx), vy = parseFloat(o.dataset.vy);
-        // move a little, in percent terms
-        const dx = vx * 0.3; // scaled down for smoother movement
-        const dy = vy * 0.3;
-        left += dx;
-        top += dy;
-        // bounce on edges
-        if(left < 2) { left = 2; o.dataset.vx = Math.abs(o.dataset.vx); }
-        if(left > 94) { left = 94; o.dataset.vx = -Math.abs(o.dataset.vx); }
-        if(top < 2) { top = 2; o.dataset.vy = Math.abs(o.dataset.vy); }
-        if(top > 94) { top = 94; o.dataset.vy = -Math.abs(o.dataset.vy); }
-        o.style.left = left + '%';
-        o.style.top = top + '%';
-      });
-    }
-
-    function endLevel3(success){
-      // clear intervals
-      if(spawnInterval) clearInterval(spawnInterval);
-      if(moveInterval) clearInterval(moveInterval);
-      if(arenaInterval) clearInterval(arenaInterval);
-
-      if(success){
-        // show final screen
-        qsel('level3').classList.remove('active');
-        showFinal();
-      } else {
-        alert('Level 3 failed — try again! 💖');
-        startLevel3(); // restart level 3
-      }
-    }
-
-    /* -------------------------
-       Final screen
-       ------------------------- */
-    function showFinal(){
-      qsel('finalScreen').style.display='block';
-      // tiny flourish
-      for(let i=0;i<24;i++){
-        setTimeout(()=> {
-          const s = document.createElement('div');
-          s.className='sparkle';
-          s.textContent = ['💖','✨','🌸'][Math.floor(Math.random()*3)];
-          s.style.left = (10 + Math.random()*80)+'%';
-          s.style.top = (20 + Math.random()*60)+'%';
-          document.body.appendChild(s);
-          setTimeout(()=>s.remove(),1500);
-        }, i*50);
-      }
-      // make final screen visible and scroll into view
-      qsel('finalScreen').scrollIntoView({behavior:'smooth'});
-    }
-
-    /* -------------------------
-       Utility: restart everything
-       ------------------------- */
-    function restartAll(){
-      // clear timers/intervals
-      try{ if(level2Interval) clearInterval(level2Interval); }catch(e){}
-      try{ if(spawnInterval) clearInterval(spawnInterval); }catch(e){}
-      try{ if(moveInterval) clearInterval(moveInterval); }catch(e){}
-      try{ if(arenaInterval) clearInterval(arenaInterval); }catch(e){}
-      qsel('finalScreen').style.display='none';
-      qsel('nextTo2Btn').style.display='none';
-      qsel('nextTo3Btn').style.display='none';
-      qsel('level1').classList.add('active');
-      qsel('level2').classList.remove('active');
-      qsel('level3').classList.remove('active');
-      qsel('levelChip').textContent='Level 1';
-      buildLevel1();
-    }
-
-    /* -------------------------
-       Initialization
-       ------------------------- */
-    buildLevel1();
-
-    // Start level 2 when clicking Next from level1
-    function startLevel2(){
-      qsel('level1').classList.remove('active');
-      qsel('level2').classList.add('active');
-      startLevel2();
-    }
-    // Start level 3 from level2
-    function startLevel3(){
-      // hide plus clear level2 timer
-      try{ if(level2Interval) clearInterval(level2Interval); }catch(e){}
-      qsel('level2').classList.remove('active');
-      qsel('level3').classList.add('active');
-      startLevel3();
-    }
-
-    // Safety: allow keyboard Enter to flip small focused card? (optional)
-    document.addEventListener('keydown', (e)=>{
-      if(e.key === 'r') restartAll();
-    });
-  </script>
+/* INIT */
+buildLevel1();
+</script>
+</main>
 </body>
 </html>
