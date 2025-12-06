@@ -12,6 +12,7 @@ body{
     background:linear-gradient(135deg,#ffe1f0,#ffd7fa);
     color:#d12c78;
     overflow-x:hidden;
+    position:relative;
 }
 h1{margin-top:15px;font-size:32px;}
 .screen{display:none;padding:20px;}
@@ -40,7 +41,7 @@ h1{margin-top:15px;font-size:32px;}
 }
 .fallHeart{
     position:fixed;top:-40px;font-size:40px;
-    animation:fall 2.7s linear forwards;
+    animation:fall linear forwards;
 }
 @keyframes fall{
     to{top:110vh;}
@@ -49,16 +50,13 @@ h1{margin-top:15px;font-size:32px;}
     font-size:120px;cursor:pointer;
     animation:shake 1s infinite;
 }
-@keyframes shake{
-    0%{transform:rotate(0deg);}
-    25%{transform:rotate(4deg);}
-    50%{transform:rotate(-4deg);}
-    100%{transform:rotate(0deg);}
-}
 .message{
-    font-size:26px;color:#ff2e8e;margin-top:20px;
+    font-size:40px;
+    color:#ff2e8e;
+    margin-top:20px;
+    font-weight:bold;
+    line-height:1.4;
 }
-/* Cute confetti */
 .confetti{
     position:fixed;width:15px;height:15px;background:random;
     top:0;left:0;z-index:9999;pointer-events:none;
@@ -67,6 +65,18 @@ h1{margin-top:15px;font-size:32px;}
 @keyframes confettiFall{
     0%{transform:translateY(0) rotate(0deg);}
     100%{transform:translateY(110vh) rotate(360deg);}
+}
+/* Floating stickers */
+.sticker{
+    position:fixed;font-size:30px;
+    top:0;left:0;
+    animation:floatSticker linear infinite;
+    pointer-events:none;
+    opacity:0.8;
+}
+@keyframes floatSticker{
+    0%{transform:translateY(0) rotate(0deg);}
+    100%{transform:translateY(100vh) rotate(360deg);}
 }
 </style>
 </head>
@@ -106,7 +116,7 @@ h1{margin-top:15px;font-size:32px;}
 </div>
 
 <script>
-let unlockedLevels = [1]; // Level 1 is unlocked by default
+let unlockedLevels = [1];
 
 function show(id){
     document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
@@ -114,7 +124,8 @@ function show(id){
 }
 
 function startMusic(){
-    document.getElementById("music").play();
+    const audio = document.getElementById("music");
+    audio.play().catch(()=>{ alert("Click allowed to start music 🎶"); });
 }
 
 function home(){ show("home"); updateLevelButtons(); }
@@ -134,7 +145,7 @@ function unlockCheck(level){
     if(unlockedLevels.includes(level)){
         startLevel(level);
     } else{
-        alert("You need to complete previous levels first! 💖");
+        alert("Complete previous levels first! 💖");
     }
 }
 
@@ -148,17 +159,15 @@ function startLevel(n){
     if(n===5) level5();
 }
 
-/* Level 1: Memory */
+/* Level 1: Memory 16 cards */
 function level1(){
-    let emojis=["💖","💖","😍","😍","😘","😘","🐻","🐻","💗","💗","💕","💕"];
+    let emojis=["💖","💖","😍","😍","😘","😘","🐻","🐻","💗","💗","💕","💕","✨","✨","🌸","🌸"];
     emojis.sort(()=>Math.random()-0.5);
     let html="<div class='grid'>";
     emojis.forEach((e,i)=> html+=`<div class='card' id='c${i}' onclick='flip(${i},"${e}",1)'>?</div>`);
     html+="</div>";
     document.getElementById("content").innerHTML=html;
-    window.first=null;
-    window.second=null;
-    window.matched=0;
+    window.first=null; window.second=null; window.matched=0;
 }
 function flip(id,emoji,level){
     let card=document.getElementById("c"+id);
@@ -170,9 +179,9 @@ function flip(id,emoji,level){
         setTimeout(()=>{
             if(first.emoji===second.emoji){
                 matched+=2;
-                createConfetti();
-                if(level===1 && matched===12){
-                    unlockedLevels.push(2);
+                createConfetti(); createSticker();
+                if(level===1 && matched===16){
+                    if(!unlockedLevels.includes(2)) unlockedLevels.push(2);
                     updateLevelButtons();
                     startLevel(2);
                 }
@@ -180,41 +189,41 @@ function flip(id,emoji,level){
                 document.getElementById("c"+first.id).innerText="?";
                 document.getElementById("c"+second.id).innerText="?";
             }
-            first=null;second=null;
+            first=null; second=null;
         },600);
     }
 }
 
-/* Level 2: Find 💗 */
+/* Level 2: Find target in 100 emojis */
 function level2(){
     let target="💗";
     let html="<h3>FIND: 💗 (Only ONE correct!) 🌸✨💞</h3>";
-    for(let i=0;i<60;i++){
-        let e=Math.random()<0.04?target:["✨","🌸","💞","⭐"][Math.floor(Math.random()*4)];
-        html+=`<span onclick='findCheck("${e}")' style='font-size:32px;margin:6px;cursor:pointer;'>${e}</span>`;
+    for(let i=0;i<100;i++){
+        let e=Math.random()<0.03?target:["✨","🌸","💞","⭐","💖","💕"][Math.floor(Math.random()*6)];
+        html+=`<span onclick='findCheck("${e}")' style='font-size:28px;margin:4px;cursor:pointer;'>${e}</span>`;
     }
     document.getElementById("content").innerHTML=html;
 }
 function findCheck(e){
     if(e==="💗"){
-        unlockedLevels.push(3);
-        updateLevelButtons();
-        createConfetti();
-        startLevel(3);
+        if(!unlockedLevels.includes(3)) unlockedLevels.push(3);
+        updateLevelButtons(); createConfetti(); createSticker(); startLevel(3);
     }
 }
 
-/* Level 3: Dodge Falling Skulls */
+/* Level 3: Dodge Falling */
 function level3(){
-    document.getElementById("content").innerHTML="<h3>Dodge 💀 and tap 5 falling 💖</h3><h2 id='score'>0 / 5</h2>";
+    document.getElementById("content").innerHTML="<h3>Dodge 💀 and tap 7 falling 💖</h3><h2 id='score'>0 / 7</h2>";
     let score=0;
     let fall=setInterval(()=>{
-        let good=Math.random()<0.6;
+        let good=Math.random()<0.55;
         let e=good?"💖":"💀";
         let h=document.createElement("div");
         h.className="fallHeart";
         h.style.left=Math.random()*80+"vw";
+        h.style.fontSize=30+Math.random()*20+"px";
         h.innerText=e;
+        h.style.animationDuration=(2+Math.random()*1.5)+"s";
         document.body.appendChild(h);
         h.onclick=()=>{
             if(e==="💀"){
@@ -223,75 +232,78 @@ function level3(){
                 document.querySelectorAll(".fallHeart").forEach(x=>x.remove());
                 startLevel(3);
             }else{
-                score++;
-                document.getElementById("score").innerText=score+" / 5";
-                h.remove();
-                if(score>=5){
-                    clearInterval(fall);
-                    document.querySelectorAll(".fallHeart").forEach(x=>x.remove());
-                    unlockedLevels.push(4);
-                    updateLevelButtons();
-                    createConfetti();
-                    startLevel(4);
-                }
+                score++; document.getElementById("score").innerText=score+" / 7"; h.remove();
+                if(score>=7){ clearInterval(fall); document.querySelectorAll(".fallHeart").forEach(x=>x.remove());
+                if(!unlockedLevels.includes(4)) unlockedLevels.push(4); updateLevelButtons(); createConfetti(); createSticker(); startLevel(4);}
             }
         };
-        setTimeout(()=>h.remove(),3000);
-    },600);
+        setTimeout(()=>h.remove(),3500);
+    },500);
 }
 
-/* Level 4: Tap ❤️ Fast */
+/* Level 4: Tap 30 hearts fast */
 function level4(){
-    document.getElementById("content").innerHTML="<h3>Tap 20 ❤️ FAST!</h3>";
-    for(let i=0;i<20;i++){
+    document.getElementById("content").innerHTML="<h3>Tap 30 ❤️ FAST!</h3>";
+    for(let i=0;i<30;i++){
         let heart=document.createElement("span");
-        heart.innerText="❤️";
-        heart.style.fontSize="36px";
-        heart.style.cursor="pointer";
-        heart.style.margin="7px";
-        heart.onclick=function(){
-            heart.remove();
+        heart.innerText="❤️"; heart.style.fontSize="32px"; heart.style.cursor="pointer"; heart.style.margin="5px";
+        // Make some hearts disappear early
+        if(Math.random()<0.3) setTimeout(()=>heart.remove(),Math.random()*2000+800);
+        heart.onclick=function(){ heart.remove();
             if(document.querySelectorAll("#content span").length===0){
-                unlockedLevels.push(5);
-                updateLevelButtons();
-                createConfetti();
-                startLevel(5);
+                if(!unlockedLevels.includes(5)) unlockedLevels.push(5);
+                updateLevelButtons(); createConfetti(); createSticker(); startLevel(5);
             }
         };
         document.getElementById("content").appendChild(heart);
     }
 }
 
-/* Level 5: Final Surprise */
+/* Level 5: Hard Mini-Game (Click stickers in sequence) */
 function level5(){
-    document.getElementById("content").innerHTML=
-        "<h2>You're ready for your surprise 🎁</h2><button class='btn' onclick='showSurprise()'>Open Surprise</button>";
+    document.getElementById("content").innerHTML="<h3>Click the stickers in this order:</h3><div id='seq'></div><div id='player'></div>";
+    let sequence=["🌸","💖","✨","💞","🐻"];
+    let seqDiv=document.getElementById("seq");
+    sequence.forEach(e=>{ let s=document.createElement("span"); s.innerText=e; s.style.fontSize="36px"; s.style.margin="6px"; seqDiv.appendChild(s); });
+    let index=0;
+    function addSticker(s){
+        let btn=document.createElement("span"); btn.innerText=s; btn.style.fontSize="36px"; btn.style.margin="6px"; btn.style.cursor="pointer";
+        btn.onclick=function(){
+            if(s===sequence[index]){ index++; createSticker(); if(index===sequence.length){ alert("Level 5 complete!"); unlockedLevels.push(6); updateLevelButtons(); showSurprise(); } }
+            else{ alert("Wrong! Try again."); index=0; }
+        };
+        document.getElementById("player").appendChild(btn);
+    }
+    // Show clickable stickers randomly
+    sequence.concat(["🌟","🎀","💗","✨"]).forEach(addSticker);
 }
 
 function showSurprise(){ show("surprise"); }
 
-/* Open Gift */
 function openGift(){
     document.getElementById("gift").style.display="none";
     document.getElementById("finalMsg").innerHTML=
-        "Happiest birthday babiee I love you sooo much kuchiipuchiii nonii kukkiiiiii 😘😘😘💖💖💖";
+        "🎉💖 HAPPIEST BIRTHDAY BABIEE 💖🎉<br>I LOVE YOU SOOO MUCH<br>kuchiipuchiii nonii kukkiiiiii 😘😘😘💖💖💖";
     for(let i=0;i<100;i++) createConfetti();
+    for(let i=0;i<20;i++) createSticker();
 }
 
 /* Confetti */
 function createConfetti(){
-    let c=document.createElement("div");
-    c.className="confetti";
-    c.style.background=randomColor();
-    c.style.left=Math.random()*100+"vw";
-    c.style.width=c.style.height=5+Math.random()*10+"px";
-    document.body.appendChild(c);
-    setTimeout(()=>c.remove(),3000);
+    let c=document.createElement("div"); c.className="confetti"; c.style.background=randomColor();
+    c.style.left=Math.random()*100+"vw"; c.style.width=c.style.height=5+Math.random()*10+"px";
+    document.body.appendChild(c); setTimeout(()=>c.remove(),3000);
 }
-function randomColor(){
-    let colors=["#ff5eeb","#ff8c42","#ffc93c","#42f5b1","#4287f5"];
-    return colors[Math.floor(Math.random()*colors.length)];
+
+/* Stickers */
+function createSticker(){
+    const stickers=["🌸","💖","✨","🌟","💞","🐻","🎀"];
+    let s=document.createElement("div"); s.className="sticker"; s.innerText=stickers[Math.floor(Math.random()*stickers.length)];
+    s.style.left=Math.random()*90+"vw"; s.style.fontSize=20+Math.random()*20+"px"; s.style.animationDuration=3+Math.random()*2+"s";
+    document.body.appendChild(s); setTimeout(()=>s.remove(),3000);
 }
+
+function randomColor(){ let colors=["#ff5eeb","#ff8c42","#ffc93c","#42f5b1","#4287f5"]; return colors[Math.floor(Math.random()*colors.length)]; }
 </script>
 </body>
 </html>
